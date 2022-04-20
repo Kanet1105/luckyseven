@@ -6,13 +6,15 @@ metadata:
     app: nginx
 data:
   nginx.conf: |
-    upstream apiserver {
-      server fastapi-svc.default.svc.cluster.local:8000;
-    }
-    server {
-      listen 127.0.0.1:8000;
-      
-      location / {
-        proxy_pass http://apiserver;
+    http {
+      upstream apiserver {
+        server fastapi-svc.default.svc.cluster.local:8000;
+      }
+      server {
+        listen 127.0.0.1:8000;
+        
+        location / {
+          proxy_pass http://apiserver;
+        }
       }
     }
