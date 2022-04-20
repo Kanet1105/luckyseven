@@ -20,4 +20,6 @@ spec:
           ports:
             - containerPort: 8000
           command:
-            - uvicorn main:app
+            - "/bin/bash"
+            - "-c"
+            - "uvicorn main:app"
