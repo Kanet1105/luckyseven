@@ -13,6 +13,6 @@ data:
       listen 127.0.0.1:8000;
       
       location / {
-        proxy_pass http://apiserver;
+        proxy_pass http://apiserver:8000;
       }
     }
