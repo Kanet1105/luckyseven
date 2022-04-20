@@ -5,7 +5,7 @@ metadata:
   labels:
     app: nginx
 data:
-  nginx-conf: |
+  nginx.conf: |
     upstream Backend {
       server fastapi-svc.default.svc.cluster.local
     }
