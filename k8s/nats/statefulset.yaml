@@ -31,7 +31,7 @@ spec:
       volumes:
         - name: config-volume
           configMap:
-            name: nats-config
+            name: nats-cm
         - name: pid
           emptyDir: {}
       # Required to be able to HUP signal and apply config reload
