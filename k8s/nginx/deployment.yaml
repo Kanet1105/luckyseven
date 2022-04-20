@@ -15,7 +15,7 @@ spec:
         app: nginx
     spec:
       volumes:
-        - name: configmap-volume
+        - name: config-volume
           configMap:
             name: nginx-cm
       containers:
