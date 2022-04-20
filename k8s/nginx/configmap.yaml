@@ -7,12 +7,12 @@ metadata:
 data:
   default.conf: |
     upstream apiserver {
-      server fastapi-svc.default.svc.cluster.local;
+      server fastapi-svc.default.svc.cluster.local:8000;
     }
     server {
       listen 127.0.0.1:8000;
       
       location / {
-        proxy_pass http://apiserver:8000;
+        proxy_pass http://apiserver;
       }
     }
