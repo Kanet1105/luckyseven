@@ -17,7 +17,7 @@ data:
     cluster {
       name: nats-cluster
       listen: 6222
-      routes: [
+      routes [
         nats-route://nats-0.nats-hlsvc.default.svc.cluster.local:6222
         nats-route://nats-1.nats-hlsvc.default.svc.cluster.local:6222
         nats-route://nats-2.nats-hlsvc.default.svc.cluster.local:6222
