@@ -23,9 +23,9 @@ spec:
   gateways:
     - test-gw
   http:
-    - name: fastapi-server
+    - name: nginx-server
       route:
         - destination:
-            host: fastapi-svc.default.svc.cluster.local
+            host: nginx.default.svc.cluster.local
             port:
               number: 8000
