@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: nats-cm
-  label:
+  labels:
     app: nats
 data:
   nats.conf: |
