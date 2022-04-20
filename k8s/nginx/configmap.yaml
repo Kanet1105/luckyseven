@@ -6,6 +6,7 @@ metadata:
     app: nginx
 data:
   nginx.conf: |
+    events {}
     http {
       upstream apiserver {
         server fastapi-svc.default.svc.cluster.local:8000;
