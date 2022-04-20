@@ -23,6 +23,18 @@ spec:
           image: nginx:latest
           ports:
             - containerPort: 8000
+          command:
+            - "-c"
+            - "/etc/nginx/nginx.conf"
           volumeMounts:
             - name: config-volume
               mountPath: /etc/nginx
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  [
+                    "/usr/sbin/nginx",
+                    "-s",
+                    "quit",
+                  ]
