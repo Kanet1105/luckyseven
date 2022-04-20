@@ -19,3 +19,5 @@ spec:
           image: tiangolo/uvicorn-gunicorn-fastapi:python3.8
           ports:
             - containerPort: 8000
+          command:
+            - uvicorn main:app
