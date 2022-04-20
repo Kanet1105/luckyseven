@@ -26,6 +26,6 @@ spec:
     - name: nginx-server
       route:
         - destination:
-            host: nginx.default.svc.cluster.local
+            host: nginx-svc.default.svc.cluster.local
             port:
               number: 8000
