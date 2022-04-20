@@ -7,7 +7,7 @@ spec:
     app: istio-ingressgateway
   servers:
     - port:
-        number: 80
+        number: 8000
         name: http
         protocol: HTTP
       hosts:
@@ -20,6 +20,8 @@ metadata:
 spec:
   hosts:
     - "*"
+  gateways:
+    - test-gw
   http:
     - name: fastapi-server
       route:
