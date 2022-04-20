@@ -17,3 +17,5 @@ spec:
       containers:
         - name: fastapi
           image: tiangolo/uvicorn-gunicorn-fastapi:python3.8
+          ports:
+            - containerPort: 8000

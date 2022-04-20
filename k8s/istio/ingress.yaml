@@ -27,3 +27,5 @@ spec:
       route:
         - destination:
             host: fastapi-svc.default.svc.cluster.local
+            port:
+              number: 8000
