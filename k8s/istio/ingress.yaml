@@ -1,58 +1,17 @@
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
-  name: proxy-gw
+  name: test-gw
 spec:
   selector:
     app: istio-ingressgateway
   servers:
   - port:
-      number: 8000
-      name: apiserver
+      number: 80
+      name: http
       protocol: HTTP
     hosts:
-      - fastapi-svc.default.svc.cluster.local
----
-apiVersion: networking.istio.io/v1alpha3
-kind: ServiceEntry
-metadata:
-  name: test-se
-spec:
-  hosts:
-  - fastapi-svc.default.svc.cluster.local
-  ports:
-  - number: 8000
-    name: apiserver
-    protocol: HTTP
-  resolution: DNS
-  location: MESH_EXTERNAL
----
-apiVersion: networking.istio.io/v1alpha3
-kind: ServiceEntry
-metadata:
-  name: localhost
-spec:
-  hosts:
-  - localhost.local
-  location: MESH_EXTERNAL
-  ports:
-  - number: 8000
-    name: apiserver
-    protocol: HTTP
-  resolution: STATIC
-  endpoints:
-  - address: 127.0.0.1
----
-apiVersion: networking.istio.io/v1alpha3
-kind: DestinationRule
-metadata:
-  name: localhost
-spec:
-  host: localhost.local
-  trafficPolicy:
-    tls:
-      mode: DISABLE
-      sni: localhost.local
+    - "*"
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
@@ -60,26 +19,12 @@ metadata:
   name: test-vs
 spec:
   hosts:
-  - fastapi-svc.default.svc.cluster.local
+  - "*"
   gateways:
-  - proxy-gw
-  - mesh
+  - test-gw
   http:
-  - match:
-    - gateways:
-      - proxy-gw
-      port: 8000
-    route:
+  - route:
     - destination:
         host: fastapi-svc.default.svc.cluster.local
-        port:
-          number: 8000
-  - match:
-    - gateways:
-        - mesh
-      port: 8000
-    route:
-    - destination:
-        host: localhost.local
         port:
           number: 8000
