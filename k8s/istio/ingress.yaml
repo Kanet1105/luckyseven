@@ -65,9 +65,21 @@ spec:
     - proxy-gw
     - mesh
   http:
-    - name: apiserver
+    - match:
+        - gateways:
+            - proxy-gw
+          port: 8000
       route:
         - destination:
             host: fastapi-svc.default.svc.cluster.local
             port:
               number: 8000
+    - match:
+        - gateways:
+            - mesh
+          port: 8000
+        route:
+          - destination:
+              host: localhost.local
+              port:
+                number: 8000
