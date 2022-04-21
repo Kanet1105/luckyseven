@@ -15,24 +15,22 @@ spec:
         app: nginx
     spec:
       volumes:
-        - name: config-volume
-          configMap:
-            name: nginx-cm
+      - name: config-volume
+        configMap:
+          name: nginx-cm
       containers:
-        - name: nginx
-          image: nginx:latest
-          ports:
-            - containerPort: 8000
-          volumeMounts:
-            - name: config-volume
-              mountPath: /etc/nginx/conf.d/default.conf
-              subPath: default.conf
-          lifecycle:
-            preStop:
-              exec:
-                command:
-                  [
-                    "/usr/sbin/nginx",
-                    "-s",
-                    "quit",
-                  ]
+      - name: nginx
+        image: nginx:latest
+        ports:
+        - containerPort: 8000
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/nginx/conf.d/default.conf
+          subPath: default.conf
+        lifecycle:
+          preStop:
+            exec:
+              command:
+              - "/usr/sbin/nginx"
+              - "-s"
+              - "quit"
