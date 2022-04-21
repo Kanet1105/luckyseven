@@ -19,7 +19,10 @@ spec:
           image: tiangolo/uvicorn-gunicorn-fastapi:python3.8
           ports:
             - containerPort: 8000
-          command:
-            - "/bin/bash"
-            - "-c"
-            - "uvicorn main:app"
+          env:
+            - name: MAX_WORKERS
+              value: 2
+            - name: HOST
+              value: 127.0.0.1
+            - name: PORT
+              value: 8000
