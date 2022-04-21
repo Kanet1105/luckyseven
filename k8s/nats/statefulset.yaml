@@ -34,12 +34,7 @@ spec:
             name: nats-cm
         - name: pid
           emptyDir: {}
-      # Required to be able to HUP signal and apply config reload
-      # to the server without restarting the pod.
       shareProcessNamespace: true
-      #################
-      #  NATS Server  #
-      #################
       terminationGracePeriodSeconds: 60
       containers:
         - name: nats
@@ -62,10 +57,6 @@ spec:
             - "--jetstream"
             - "--config"
             - "/etc/nats-config/nats.conf"
-
-          # Required to be able to define an environment variable
-          # that refers to other environment variables.  This env var
-          # is later used as part of the configuration file.
           env:
             - name: POD_NAME
               valueFrom:
@@ -78,8 +69,6 @@ spec:
               mountPath: /etc/nats-config
             - name: pid
               mountPath: /var/run/nats
-
-          # Liveness/Readiness probes against the monitoring
           livenessProbe:
             httpGet:
               path: /
@@ -92,17 +81,10 @@ spec:
               port: 8222
             initialDelaySeconds: 10
             timeoutSeconds: 5
-
-          # Gracefully stop NATS Server on pod deletion or image upgrade.
           lifecycle:
             preStop:
               exec:
-                # Using the alpine based NATS image, we add an extra sleep that is
-                # the same amount as the terminationGracePeriodSeconds to allow
-                # the NATS Server to gracefully terminate the client connections.
                 command:
-                  [
-                    "/bin/bash",
-                    "-c",
-                    "/nats-server -sl=ldm=/var/run/nats/nats.pid && /bin/sleep 10",
-                  ]
+                  - "/bin/bash"
+                  - "-c"
+                  - "/nats-server -sl=ldm=/var/run/nats/nats.pid && /bin/sleep 10"
