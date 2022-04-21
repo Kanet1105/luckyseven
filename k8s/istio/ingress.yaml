@@ -11,7 +11,7 @@ spec:
         name: apiserver
         protocol: HTTP
       hosts:
-        - "*"
+        - fastapi-svc.default.svc.cluster.local
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: ServiceEntry
@@ -24,8 +24,8 @@ spec:
     - number: 8000
       name: apiserver
       protocol: HTTP
-  resolution: DNS
-  location: MESH_EXTERNAL
+    resolution: DNS
+    location: MESH_EXTERNAL
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: ServiceEntry
