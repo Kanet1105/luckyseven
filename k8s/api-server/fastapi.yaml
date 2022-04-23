@@ -69,3 +69,21 @@ spec:
         volumeMounts:
         - name: api-server-volume
           mountPath: /app
+        command:
+        - "/bin/bash"
+        - "-c"
+        - "cd app"
+        - "pip install -r requirements.txt"
+        - "uvicorn main:app"
+      livenessProbe:
+        httpGet:
+          path: /
+          port: 8000
+        initialDelaySeconds: 10
+        timeoutSeconds: 5
+      readinessProbe:
+        httpGet:
+          path: /
+          port: 8000
+        initialDelaySeconds: 10
+        timeoutSeconds: 5
