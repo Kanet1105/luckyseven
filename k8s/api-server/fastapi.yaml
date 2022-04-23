@@ -69,9 +69,3 @@ spec:
         volumeMounts:
         - name: api-server-volume
           mountPath: /app
-        command:
-        - "/bin/bash"
-        - "-c"
-        - "cd app"
-        - "pip install -r requirements.txt"
-        - "uvicorn main:app"
