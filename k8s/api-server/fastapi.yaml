@@ -1,0 +1,88 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-server-svc
+  labels:
+    app: api-server
+spec:
+  ports:
+  - name: http
+    protocol: TCP
+    port: 8000
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: requirements-cm
+  labels:
+    app: api-server
+requirements.txt: |
+  fastapi==0.75.0
+  pydantic==1.9.0
+  uvicorn==0.17.6
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: main-cm
+  labels:
+    app: api-server
+main.py: |
+  from typing import Optional
+  from fastapi import FastAPI
+
+  app = FastAPI()
+
+
+  @app.get("/")
+  def read_root():
+      return {"Hello": "World"}
+
+
+  @app.get("/items/{item_id}")
+  def read_item(item_id: int, q: Optional[str] = None):
+      return {"item_id": item_id, "q": q}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-server
+  labels:
+    app: api-server
+spec:
+  selector:
+    matchLabels:
+      app: api-server
+  replicas: 1
+  updateStrategy:
+    type: RollingUpdate
+  templates:
+    metadata:
+      labels:
+        app: api-server
+    spec:
+      volumes:
+      - name: requirements
+        configMap:
+          name: requirements-cm
+      - name: main
+        configMap:
+          name: main-cm
+      containers:
+      - name: api-server
+        image: python:3.8
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8000
+          name: http
+        volumeMounts:
+        - name: requirements
+          mountPath: /app
+        - name: main
+          mountPath: /app
+        command:
+        - "/bin/bash"
+        - "-c"
+        - "cd app"
+        - "pip install -r requirements.txt"
+        - "uvicorn main:app"
