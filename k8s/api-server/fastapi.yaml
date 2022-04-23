@@ -68,7 +68,7 @@ spec:
           name: http
         volumeMounts:
         - name: api-server-volume
-          mountPath: /
+          mountPath: /app
         command:
         - "/bin/bash"
         - "-c"
