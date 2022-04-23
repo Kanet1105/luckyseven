@@ -13,35 +13,29 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: requirements-cm
+  name: api-server-cm
   labels:
     app: api-server
-requirements.txt: |
-  fastapi==0.75.0
-  pydantic==1.9.0
-  uvicorn==0.17.6
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: main-cm
-  labels:
-    app: api-server
-main.py: |
-  from typing import Optional
-  from fastapi import FastAPI
+data:
+  requirements.txt: |
+    fastapi==0.75.0
+    pydantic==1.9.0
+    uvicorn==0.17.6
+  main.py: |
+    from typing import Optional
+    from fastapi import FastAPI
 
-  app = FastAPI()
+    app = FastAPI()
 
 
-  @app.get("/")
-  def read_root():
-      return {"Hello": "World"}
+    @app.get("/")
+    def read_root():
+        return {"Hello": "World"}
 
 
-  @app.get("/items/{item_id}")
-  def read_item(item_id: int, q: Optional[str] = None):
-      return {"item_id": item_id, "q": q}
+    @app.get("/items/{item_id}")
+    def read_item(item_id: int, q: Optional[str] = None):
+        return {"item_id": item_id, "q": q}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -62,12 +56,9 @@ spec:
         app: api-server
     spec:
       volumes:
-      - name: requirements
+      - name: api-server-volume
         configMap:
-          name: requirements-cm
-      - name: main
-        configMap:
-          name: main-cm
+          name: api-server-cm
       containers:
       - name: api-server
         image: python:3.8
@@ -76,10 +67,8 @@ spec:
         - containerPort: 8000
           name: http
         volumeMounts:
-        - name: requirements
-          mountPath: /app
-        - name: main
-          mountPath: /app
+        - name: api-server-volume
+          mountPath: /
         command:
         - "/bin/bash"
         - "-c"
