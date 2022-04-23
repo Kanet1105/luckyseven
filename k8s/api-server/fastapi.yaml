@@ -50,7 +50,7 @@ spec:
   replicas: 1
   updateStrategy:
     type: RollingUpdate
-  templates:
+  template:
     metadata:
       labels:
         app: api-server
