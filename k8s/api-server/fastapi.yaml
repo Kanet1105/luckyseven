@@ -48,7 +48,7 @@ spec:
     matchLabels:
       app: api-server
   replicas: 1
-  updateStrategy:
+  strategy:
     type: RollingUpdate
   template:
     metadata:
