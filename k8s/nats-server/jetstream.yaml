@@ -10,10 +10,13 @@ spec:
   ports:
   - name: client
     port: 4222
+    protocol: TCP
   - name: leafnodes
     port: 7422
+    protocol: TCP
   - name: monitor
     port: 8222
+    protocol: TCP
 ---
 apiVersion: v1
 kind: Service
@@ -27,6 +30,7 @@ spec:
   ports:
   - name: cluster
     port: 6222
+    protocol: TCP
   clusterIP: None
 ---
 apiVersion: v1
@@ -37,7 +41,7 @@ metadata:
     app: jetstream
 data:
   nats.conf: |
-    server_name: $SERVER_NAME_PREFIX
+    server_name: $SERVER_NAME
     listen: 4222
     http: 8222
     
@@ -48,10 +52,10 @@ data:
     cluster {
       name: jetstream-cluster
       listen: 6222
-      routes [
-        nats-route://jetstream-0.${SERVER_NAME_SUFFIX}
-        nats-route://jetstream-1.${SERVER_NAME_SUFFIX}
-        nats-route://jetstream-2.${SERVER_NAME_SUFFIX}
+      routes: [
+        nats-route://jetstream-0.jetstream-hlsvc.default.svc.cluster.local:6222
+        nats-route://jetstream-1.jetstream-hlsvc.default.svc.cluster.local:6222
+        nats-route://jetstream-2.jetstream-hlsvc.default.svc.cluster.local:6222
       ]
       connect_retries: 30
     }
@@ -68,7 +72,7 @@ spec:
     matchLabels:
       app: jetstream
   replicas: 3
-  serviceName: nats-hlsvc
+  serviceName: jetstream-hlsvc
   updateStrategy:
     type: RollingUpdate
   podManagementPolicy: Parallel
@@ -93,6 +97,8 @@ spec:
           name: jetstream-cm
       - name: pid
         emptyDir: {}
+      shareProcessNamespace: true
+      terminationGracePeriodSeconds: 60
       containers:
         - name: jetstream
           image: nats:alpine3.15
@@ -119,10 +125,8 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: metadata.namespace
-          - name: SERVER_NAME_PREFIX
-            value: $(POD_NAME)
-          - name: SERVER_NAME_SUFFIX
-            value: $(SERVICE_NAME).$(NAMESPACE).svc.cluster.local:6222
+          - name: SERVER_NAME
+            value: $(POD_NAME)-server
           volumeMounts:
           - name: jetstream-volume
             mountPath: /etc/nats-config
