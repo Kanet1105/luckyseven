@@ -22,7 +22,7 @@ spec:
   - "*"
   gateways:
   - test-gw
-  http:
+  tcp:
   - match:
     - port: 8000
     route:
