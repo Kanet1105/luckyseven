@@ -77,8 +77,5 @@ spec:
         - name: api-server-volume
           mountPath: $(APP_PATH)
         command:
-        - "/bin/bash"
-        - "-c"
-        args:
-        - pip install -r $APP_PATH/requirements.txt;
-          uvicorn main:app --app-dir $APP_PATH --host $HOST --port $PORT;
+        - "pip install -r $APP_PATH/requirements.txt
+          && uvicorn main:app --app-dir $APP_PATH --host $HOST --port $PORT"
