@@ -49,9 +49,9 @@ data:
       name: jetstream-cluster
       listen: 6222
       routes [
-        nats-route://jetstream-0.{{ $SERVER_NAME_SUFFIX }}:6222
-        nats-route://jetstream-1.{{ $SERVER_NAME_SUFFIX }}:6222
-        nats-route://jetstream-2.{{ $SERVER_NAME_SUFFIX }}:6222
+        nats-route://jetstream-0.$SERVER_NAME_SUFFIX
+        nats-route://jetstream-1.$SERVER_NAME_SUFFIX
+        nats-route://jetstream-2.$SERVER_NAME_SUFFIX
       ]
       connect_retries: 30
     }
@@ -120,9 +120,9 @@ spec:
               fieldRef:
                 fieldPath: metadata.namespace
           - name: SERVER_NAME_PREFIX
-            value: $POD_NAME
+            value: $(POD_NAME)
           - name: SERVER_NAME_SUFFIX
-            value: {{ $SERVICE_NAME }}.{{ $NAMESPACE }}.svc.cluster.local
+            value: $(SERVICE_NAME).$(NAMESPACE).svc.cluster.local:6222
           volumeMounts:
           - name: jetstream-volume
             mountPath: /etc/nats-config
