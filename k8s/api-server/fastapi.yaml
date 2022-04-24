@@ -5,6 +5,8 @@ metadata:
   labels:
     app: api-server
 spec:
+  selector:
+    app: api-server
   ports:
   - name: http
     protocol: TCP
