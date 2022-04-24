@@ -7,9 +7,9 @@ spec:
     app: istio-ingressgateway
   servers:
   - port:
-      number: 80
+      number: 8000
       name: http
-      protocol: HTTP
+      protocol: TCP
     hosts:
     - "*"
 ---
@@ -24,8 +24,7 @@ spec:
   - test-gw
   http:
   - match:
-    - uri:
-        exact: /main
+    - port: 8000
     route:
     - destination:
         host: api-server-svc.default.svc.cluster.local
