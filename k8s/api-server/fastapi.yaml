@@ -9,8 +9,8 @@ spec:
     app: api-server
   ports:
   - name: http
-    protocol: TCP
     port: 8000
+    protocol: TCP
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -76,3 +76,4 @@ spec:
         - "-c"
         - "pip install -r /app/requirements.txt;
           uvicorn main:app --app-dir /app --proxy-headers --host 0.0.0.0 --port 8000"
+      terminationGracePeriodSeconds: 30

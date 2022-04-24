@@ -30,10 +30,3 @@ spec:
         host: api-server-svc.default.svc.cluster.local
         port:
           number: 8000
-  - match:
-    - port: 6222
-    route:
-    - destination:
-        host: jetstream-hlsvc.default.svc.cluster.local
-        port:
-          number: 6222
