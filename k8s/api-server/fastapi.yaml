@@ -73,4 +73,4 @@ spec:
         - "/bin/bash"
         - "-c"
         - "pip install -r /app/requirements.txt;
-          uvicorn main:app --app-dir /app --host 0.0.0.0 --port 8000"
+          uvicorn main:app --app-dir /app --proxy-headers --host 0.0.0.0 --port 8000"
