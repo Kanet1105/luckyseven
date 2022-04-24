@@ -28,6 +28,6 @@ spec:
         exact: /main
     route:
     - destination:
-        host: nginx-svc.default.svc.cluster.local
+        host: api-server-svc.default.svc.cluster.local
         port:
           number: 8000
