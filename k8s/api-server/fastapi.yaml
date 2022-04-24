@@ -78,7 +78,7 @@ spec:
           mountPath: $(APP_PATH)
         command:
         - "/bin/bash"
-        args:
         - "-c"
-        - "pip install -r $APP_PATH/requirements.txt"
-        - "uvicorn main:app --app-dir $APP_PATH --host $HOST --port $PORT"
+        args:
+        - "pip install -r $APP_PATH/requirements.txt;"
+          "uvicorn main:app --app-dir $APP_PATH --host $HOST --port $PORT;"
