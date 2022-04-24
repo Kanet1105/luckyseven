@@ -49,9 +49,9 @@ data:
       name: jetstream-cluster
       listen: 6222
       routes [
-        nats-route://jetstream-0.$SERVER_NAME_SUFFIX
-        nats-route://jetstream-1.$SERVER_NAME_SUFFIX
-        nats-route://jetstream-2.$SERVER_NAME_SUFFIX
+        nats-route://jetstream-0.${SERVER_NAME_SUFFIX}
+        nats-route://jetstream-1.${SERVER_NAME_SUFFIX}
+        nats-route://jetstream-2.${SERVER_NAME_SUFFIX}
       ]
       connect_retries: 30
     }
