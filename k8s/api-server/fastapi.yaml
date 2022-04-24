@@ -66,11 +66,19 @@ spec:
         ports:
         - containerPort: 8000
           name: http
+        env:
+        - name: APP_PATH
+          value: "/app"
+        - name: HOST
+          value: "0.0.0.0"
+        - name: PORT
+          value: "8000"
         volumeMounts:
         - name: api-server-volume
-          mountPath: /app
+          mountPath: $(APP_PATH)
         command:
         - "/bin/bash"
+        args:
         - "-c"
-        - "pip install -r /app/requirements.txt"
-        - "uvicorn main:app --app-dir /app --host 0.0.0.0 --port 8000"
+        - "pip install -r $APP_PATH/requirements.txt"
+        - "uvicorn main:app --app-dir $APP_PATH --host $HOST --port $PORT"
