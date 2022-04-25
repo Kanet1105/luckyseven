@@ -47,6 +47,8 @@ data:
     
     jetstream {
       store_dir=/nats/storage
+      max_mem: 4G
+      max_file: 4G
     }
     
     cluster {
