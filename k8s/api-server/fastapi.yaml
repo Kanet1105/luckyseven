@@ -25,9 +25,10 @@ data:
     uvicorn==0.17.6
     nats-py==2.1.0
   main.py: |
+    from typing import Optional
     from fastapi import FastAPI
     from fastapi import WebSocket, WebSocketDisconnect
-    import json
+    from pydantic import BaseModel
     import nats
 
 
@@ -58,19 +59,32 @@ data:
             print(data)
 
 
+    class MinimalData(BaseModel):
+        index: int
+        value0: Optional[list] = None
+        value1: Optional[str] = None
+        value2: Optional[int] = None
+        value3: Optional[float] = None
+
+
     app = FastAPI()
     print("Starting the api server.")
     manager = ConnectionManager()
     print("Initializing the connection manager.")
-    
-    
+
+
     @app.get("/")
     async def root():
         return {"websocket uri": "/stream/$uid"}
 
 
-    @app.websocket("/stream/{uid}")
-    async def streamProcessing(websocket: WebSocket, uid: str):
+    @app.post("/post/")
+    async def minimalPublish(data: MinimalData):
+        return data
+
+
+    @app.websocket("/websocket/{uid}")
+    async def streamPublish(websocket: WebSocket, uid: str):
         await manager.onConnection(websocket, uid)
         try:
             while True:
