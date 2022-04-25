@@ -25,11 +25,12 @@ data:
     uvicorn==0.17.6
     nats-py==2.1.0
   main.py: |
-    from typing import Optional
     from fastapi import FastAPI
     from fastapi import WebSocket, WebSocketDisconnect
     from pydantic import BaseModel
     import nats
+    import traceback
+    import pickle
 
 
     class ConnectionManager:
@@ -61,16 +62,27 @@ data:
 
     class MinimalData(BaseModel):
         index: int
-        value0: Optional[list] = None
-        value1: Optional[str] = None
-        value2: Optional[int] = None
-        value3: Optional[float] = None
+        timestamp: float
+        contents: str
+
+
+    async def connectNats():
+        client = await nats.connect("10.109.255.3:4222")
+        jetstream = client.jetstream()
+        try:
+            await jetstream.add_stream(name="echo", subjects=["client", "server"])
+        except:
+            print(traceback.format_exc())
+        subscription = await jetstream.subscribe("server")
+        print("Subscribed to the server")
+        return client, jetstream, subscription
 
 
     app = FastAPI()
     print("Starting the api server.")
     manager = ConnectionManager()
     print("Initializing the connection manager.")
+    client, jetstream, subscription = await connectNats()
 
 
     @app.get("/")
@@ -78,9 +90,12 @@ data:
         return {"websocket uri": "/stream/$uid"}
 
 
-    @app.post("/post/")
-    async def minimalPublish(data: MinimalData):
-        return data
+    @app.post("/process")
+    async def process(data: MinimalData):
+        await jetstream.publish("client", pickle.dumps(data))
+        received = await subscription.next_msg()
+        await received.ack()
+        return pickle.loads(received.data)
 
 
     @app.websocket("/websocket/{uid}")
