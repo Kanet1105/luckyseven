@@ -24,20 +24,53 @@ data:
     pydantic==1.9.0
     uvicorn==0.17.6
   main.py: |
-    from typing import Optional
     from fastapi import FastAPI
+    from fastapi import WebSocket, WebSocketDisconnect
+    import json
+    import nats
+
+
+    class ConnectionManager:
+        def __init__(self):
+            self.connections = {}
+
+        async def onConnection(self, websocket: WebSocket, uid: str):
+            if uid in self.connections:
+                print("uid: {id} exists.".format(id=uid))
+            else:
+                await websocket.accept()
+                self.connections[uid] = websocket
+                print("-" * 50)
+                print("A new connection has been made")
+                print("uid: {id}".format(id=uid))
+                print("socket: {sock}".format(sock=self.connections[uid]))
+
+        def onDisconnection(self, uid: str):
+            print("-" * 50)
+            print("A client disconnected")
+            print("uid: {id}".format(id=uid))
+            print("socket: {sock}".format(sock=self.connections[uid]))
+            del self.connections[uid]
+
+        async def publish(self, uid: str):
+            data = self.connections[uid].receive_json()
+            print(data)
+
 
     app = FastAPI()
+    print("Starting the api server.")
+    manager = ConnectionManager()
+    print("Initializing the connection manager.")
 
 
-    @app.get("/")
-    def read_root():
-        return {"Hello": "World"}
-
-
-    @app.get("/items/{item_id}")
-    def read_item(item_id: int, q: Optional[str] = None):
-        return {"item_id": item_id, "q": q}
+    @app.websocket("/stream/{uid}")
+    async def streamProcessing(websocket: WebSocket, uid: str):
+        await manager.onConnection(websocket, uid)
+        try:
+            while True:
+                await manager.publish(uid)
+        except WebSocketDisconnect:
+            manager.onDisconnection(uid)
 ---
 apiVersion: apps/v1
 kind: Deployment
