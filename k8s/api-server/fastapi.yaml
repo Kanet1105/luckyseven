@@ -36,6 +36,21 @@ data:
     class ConnectionManager:
         def __init__(self):
             self.connections = {}
+            self.client = None
+            self.jetstream = None
+            self.subscription = None
+            self.isInitialized = False
+
+        async def connect2Nats(self):
+            self.client = await nats.connect("10.109.255.3:4222")
+            self.jetstream = self.client.jetstream()
+            try:
+                await self.jetstream.add_stream(name="echo", subjects=["client", "server"])
+            except:
+                print(traceback.format_exc())
+            self.subscription = await self.jetstream.subscribe("server")
+            print("Subscribed to the server")
+            self.isInitialized = True
 
         async def onConnection(self, websocket: WebSocket, uid: str):
             if uid in self.connections:
@@ -66,34 +81,23 @@ data:
         contents: str
 
 
-    async def connectNats():
-        client = await nats.connect("10.109.255.3:4222")
-        jetstream = client.jetstream()
-        try:
-            await jetstream.add_stream(name="echo", subjects=["client", "server"])
-        except:
-            print(traceback.format_exc())
-        subscription = await jetstream.subscribe("server")
-        print("Subscribed to the server")
-        return client, jetstream, subscription
-
-
     app = FastAPI()
     print("Starting the api server.")
     manager = ConnectionManager()
     print("Initializing the connection manager.")
-    client, jetstream, subscription = await connectNats()
 
 
     @app.get("/")
     async def root():
-        return {"websocket uri": "/stream/$uid"}
+        return {"websocket uri": "/websocket/$uid"}
 
 
     @app.post("/process")
     async def process(data: MinimalData):
-        await jetstream.publish("client", pickle.dumps(data))
-        received = await subscription.next_msg()
+        if not manager.isInitialized:
+            await manager.connect2Nats()
+        await manager.jetstream.publish("client", pickle.dumps(data))
+        received = await manager.subscription.next_msg()
         await received.ack()
         return pickle.loads(received.data)
 
