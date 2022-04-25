@@ -61,6 +61,11 @@ data:
     print("Starting the api server.")
     manager = ConnectionManager()
     print("Initializing the connection manager.")
+    
+    
+    @app.get("/")
+    async def root():
+        return {"websocket uri": "/stream/$uid"}
 
 
     @app.websocket("/stream/{uid}")
