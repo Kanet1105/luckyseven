@@ -44,10 +44,6 @@ data:
         async def connect2Nats(self):
             self.client = await nats.connect("10.109.255.3:4222")
             self.jetstream = self.client.jetstream()
-            try:
-                await self.jetstream.add_stream(name="echo", subjects=["client", "server"])
-            except:
-                print(traceback.format_exc())
             self.subscription = await self.jetstream.subscribe("server")
             print("Subscribed to the server")
             self.isInitialized = True
@@ -140,6 +136,8 @@ spec:
         ports:
         - name: http
           containerPort: 8000
+        - name: nats-client
+          containerPort: 4222
         volumeMounts:
         - name: api-server-volume
           mountPath: /app
