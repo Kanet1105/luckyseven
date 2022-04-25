@@ -10,6 +10,7 @@ data:
   main.py: |
     import asyncio
     import nats
+    from nats.errors import TimeoutError
     import traceback
 
 
@@ -24,10 +25,12 @@ data:
         print(await jetstream.stream_info("echo"))
         subscription = await jetstream.subscribe("client")
         while True:
-            received = await subscription.next_msg()
-            await received.ack()
-            await jetstream.publish("server", received.data)
-
+            try:
+                received = await subscription.next_msg()
+                await received.ack()
+                await jetstream.publish("server", received.data)
+            except TimeoutError:
+                pass
 
     if __name__ == "__main__":
         loop = asyncio.get_event_loop()
