@@ -8,9 +8,6 @@ spec:
   selector:
     app: jetstream
   ports:
-  - name: client
-    port: 4222
-    protocol: TCP
   - name: leafnodes
     port: 7422
     protocol: TCP
@@ -28,6 +25,9 @@ spec:
   selector:
     app: jetstream
   ports:
+  - name: client
+    port: 4222
+    protocol: TCP
   - name: cluster
     port: 6222
     protocol: TCP
