@@ -8,13 +8,13 @@ spec:
   selector:
     app: jetstream
   ports:
-  - name: client
+  - name: tcp-client
     port: 4222
     protocol: TCP
-  - name: leafnodes
+  - name: tcp-leafnodes
     port: 7422
     protocol: TCP
-  - name: monitor
+  - name: http-monitor
     port: 8222
     protocol: TCP
 ---
@@ -28,7 +28,7 @@ spec:
   selector:
     app: jetstream
   ports:
-  - name: cluster
+  - name: tcp-cluster
     port: 6222
     protocol: TCP
   clusterIP: None
@@ -108,16 +108,14 @@ spec:
           image: nats:alpine3.15
           imagePullPolicy: IfNotPresent
           ports:
-          - name: client
+          - name: tcp-client
             containerPort: 4222
-          - name: leafnodes
+          - name: tcp-leafnodes
             containerPort: 7422
-          - name: cluster
+          - name: tcp-cluster
             containerPort: 6222
-          - name: monitor
+          - name: http-monitor
             containerPort: 8222
-          - name: metrics
-            containerPort: 7777
           env:
           - name: POD_NAME
             valueFrom:
