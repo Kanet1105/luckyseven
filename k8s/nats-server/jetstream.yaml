@@ -82,6 +82,8 @@ spec:
     metadata:
       labels:
         app: jetstream
+      annotations:
+        proxy.istio.io/config: '{ "holdApplicationUntilProxyStarts": true }'
     spec:
       affinity:
         podAntiAffinity:
