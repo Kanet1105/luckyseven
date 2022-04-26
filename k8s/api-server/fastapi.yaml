@@ -136,7 +136,7 @@ spec:
         ports:
         - name: http
           containerPort: 8000
-        - name: nats-client
+        - name: tcp-client
           containerPort: 4222
         volumeMounts:
         - name: api-server-volume
