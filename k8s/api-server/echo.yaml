@@ -15,7 +15,7 @@ data:
 
 
     async def process():
-        client = await nats.connect("10.109.255.3:4222")
+        client = await nats.connect("192.168.1.103:30001")
         jetstream = client.jetstream()
         print("connected to the Nats server.")
         try:
@@ -31,6 +31,7 @@ data:
                 await jetstream.publish("server", received.data)
             except TimeoutError:
                 pass
+
 
     if __name__ == "__main__":
         loop = asyncio.get_event_loop()
