@@ -1,4 +1,18 @@
 apiVersion: v1
+kind: Service
+metadata:
+  name: echo-svc
+  labels:
+    app: echo
+spec:
+  selector:
+    app: echo
+  ports:
+  - name: nats-client
+    port: 4222
+    protocol: TCP
+---
+apiVersion: v1
 kind: ConfigMap
 metadata:
   name: echo-cm
@@ -15,7 +29,7 @@ data:
 
 
     async def process():
-        client = await nats.connect("192.168.1.103:30001")
+        client = await nats.connect("10.101.68.2:4222")
         jetstream = client.jetstream()
         print("connected to the Nats server.")
         try:
