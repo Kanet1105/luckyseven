@@ -149,6 +149,6 @@ spec:
             preStop:
               exec:
                 command:
-                  - "/bin/sh"
-                  - "-c"
-                  - "/nats-server -sl=ldm=/var/run/nats/nats.pid && /bin/sleep 10"
+                - "/bin/sh"
+                - "-c"
+                - "/nats-server -sl=ldm=/var/run/nats/nats.pid && /bin/sleep 10"
