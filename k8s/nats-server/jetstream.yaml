@@ -129,10 +129,10 @@ spec:
           - name: pid
             mountPath: /var/run/nats
           command:
-            - "nats-server"
-            - "--jetstream"
-            - "--config"
-            - "/etc/nats-config/nats.conf"
+          - "nats-server"
+          - "--jetstream"
+          - "--config"
+          - "/etc/nats-config/nats.conf"
           livenessProbe:
             httpGet:
               path: /
