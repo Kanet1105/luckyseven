@@ -104,51 +104,51 @@ spec:
       shareProcessNamespace: true
       terminationGracePeriodSeconds: 60
       containers:
-        - name: jetstream
-          image: nats:alpine3.15
-          imagePullPolicy: IfNotPresent
-          ports:
-          - name: tcp-client
-            containerPort: 4222
-          - name: tcp-leafnodes
-            containerPort: 7422
-          - name: tcp-cluster
-            containerPort: 6222
-          - name: http-monitor
-            containerPort: 8222
-          env:
-          - name: POD_NAME
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.name
-          - name: SERVER_NAME
-            value: $(POD_NAME)-server
-          volumeMounts:
-          - name: jetstream-volume
-            mountPath: /etc/nats-config
-          - name: pid
-            mountPath: /var/run/nats
-          command:
-          - "nats-server"
-          - "--jetstream"
-          - "--config"
-          - "/etc/nats-config/nats.conf"
-          livenessProbe:
-            httpGet:
-              path: /
-              port: 8222
-            initialDelaySeconds: 10
-            timeoutSeconds: 5
-          readinessProbe:
-            httpGet:
-              path: /
-              port: 8222
-            initialDelaySeconds: 10
-            timeoutSeconds: 5
-          lifecycle:
-            preStop:
-              exec:
-                command:
-                - "/bin/sh"
-                - "-c"
-                - "/nats-server -sl=ldm=/var/run/nats/nats.pid && /bin/sleep 10"
+      - name: jetstream
+        image: nats:alpine3.15
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: tcp-client
+          containerPort: 4222
+        - name: tcp-leafnodes
+          containerPort: 7422
+        - name: tcp-cluster
+          containerPort: 6222
+        - name: http-monitor
+          containerPort: 8222
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: SERVER_NAME
+          value: $(POD_NAME)-server
+        volumeMounts:
+        - name: jetstream-volume
+          mountPath: /etc/nats-config
+        - name: pid
+          mountPath: /var/run/nats
+        command:
+        - "nats-server"
+        - "--jetstream"
+        - "--config"
+        - "/etc/nats-config/nats.conf"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8222
+          initialDelaySeconds: 10
+          timeoutSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8222
+          initialDelaySeconds: 10
+          timeoutSeconds: 5
+        lifecycle:
+          preStop:
+            exec:
+              command:
+              - "/bin/sh"
+              - "-c"
+              - "/nats-server -sl=ldm=/var/run/nats/nats.pid && /bin/sleep 10"
