@@ -12,6 +12,7 @@ import traceback
 
 from common.config import URL, Selector, XPath, ClassName
 
+
 # elements list 반환
 def getElements(driver: webdriver, timeout: int, kind: By, value: str) -> list:
     try :
@@ -21,6 +22,7 @@ def getElements(driver: webdriver, timeout: int, kind: By, value: str) -> list:
         return elements
     except :
         return None
+
 
 # element 값 하나 반환
 def getValue(driver: webdriver, timeout: int, kind: By, value: str) -> str:
@@ -32,6 +34,7 @@ def getValue(driver: webdriver, timeout: int, kind: By, value: str) -> str:
     except :
         return None
 
+
 # iframe 전환
 def switchToFrame(driver: webdriver, timeout: int, kind: By, value: str) -> bool:
     try :
@@ -40,6 +43,7 @@ def switchToFrame(driver: webdriver, timeout: int, kind: By, value: str) -> bool
         )
         return ack
     except : return False
+
 
 # click 하기
 def click(driver: webdriver, timeout: int, kind: By, value: str) -> bool:
@@ -51,19 +55,22 @@ def click(driver: webdriver, timeout: int, kind: By, value: str) -> bool:
     except :
         return False
 
+
 # scroll 끝까지 내리기
 def scrollDown(driver: webdriver):
     driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
+
 # 검색어 입력
-def search(driver: webdriver, keyword: str) :
+def search(driver: webdriver, keyword: str):
     search_path = Selector.search_path_kakao
     search_box = getElements(driver, By.XPATH, search_path)
     actions = ActionChains(driver).send_keys_to_element(search_box, keyword).send_keys(Keys.ENTER)
     actions.perform()
 
+
 # user hash값
-def getUserHash(driver: webdriver) :
+def getUserHash(driver: webdriver):
     buttonFollow = getElements(driver, 5, By.CLASS_NAME, '_2r43z')
 
     for i, j in enumerate(buttonFollow):
@@ -71,21 +78,24 @@ def getUserHash(driver: webdriver) :
 
     return userHashValue
 
+
 # 도로명 주소 위도 경도 변환
 def geocoding(geoLocal: Nominatim, address: str) -> (float, float):
     address = " ".join(address.split(' ')[:4])
-    try :
+    try:
         geo = geoLocal.geocode(address)
         return geo.latitude, geo.longitude
-    except :
+    except:
         return None, None
+
 
 # json 파일 생성
 def constructJson(fileName: str, data: list):
     with open(f'{fileName}.json', 'w', encoding='utf-8') as fp:
         json.dump(data, fp)
 
+
 # pickle 파일 생성
 def constructPickle(fileName: str, data):
-    with open(f'{fileName}.pkl', 'wb') as f :
+    with open(f'{fileName}.pkl', 'wb') as f:
         pickle.dump(data, f)

@@ -1,5 +1,6 @@
-class URL :
+class URL:
     baseURL = 'https://map.naver.com/v5/search/{placeName}/place'
+
 
 class Selector:
     # kakao search
@@ -9,7 +10,8 @@ class Selector:
 
     # get review
 
-class XPath :
+
+class XPath:
     ## kakao search
     searchPathKakao = '//*[@id="search.keyword.query"]'
 
@@ -55,7 +57,7 @@ class XPath :
     # get review
 
 
-class ClassName :
+class ClassName:
     # kakao search
 
     # get place info
