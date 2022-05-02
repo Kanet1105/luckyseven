@@ -72,6 +72,7 @@ def get_data(name):
                     if name not in name_list:
                         name_list.append(name)
             WebDriverWait(driver, 5).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="info.search.page.next"]'))).click()
+    # 없는 페이지면
     except:
         driver.quit()
         return name_list
