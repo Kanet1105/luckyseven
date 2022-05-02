@@ -4,7 +4,7 @@ from selenium.webdriver.common.by import By
 import pickle
 
 
-def load_driver(driver_path: str):
+def loadDriver(driver_path: str):
     service = Service(driver_path)
     option = webdriver.ChromeOptions()
     option.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
@@ -13,10 +13,9 @@ def load_driver(driver_path: str):
     return driver
 
 
-def load_list(list_path: str) -> list:
-    with open(list_path, 'rb') as fp:
+def loadList(listPath: str) -> list:
+    with open(listPath, 'rb') as fp:
         return pickle.load(fp)
-
 
 if __name__ == '__main__':
     ########

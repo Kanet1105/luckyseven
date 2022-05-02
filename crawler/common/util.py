@@ -8,7 +8,7 @@ from config import URL, Selector, XPath, ClassName
 import time
 
 # elements list 반환
-def get_elements(driver: webdriver, timeout: int, kind: By, value: str) -> list:
+def getElements(driver: webdriver, timeout: int, kind: By, value: str) -> list:
     elements = WebDriverWait(driver, timeout).until(
         EC.presence_of_all_elements_located((kind, value))
     )
@@ -16,7 +16,7 @@ def get_elements(driver: webdriver, timeout: int, kind: By, value: str) -> list:
 
 
 # iframe 전환
-def switch_to_frame(driver: webdriver, timeout: int, kind: By, value: str) -> bool:
+def switchToFrame(driver: webdriver, timeout: int, kind: By, value: str) -> bool:
     ack = WebDriverWait(driver, timeout).until(
         EC.frame_to_be_available_and_switch_to_it((kind, value))
     )
@@ -25,7 +25,7 @@ def switch_to_frame(driver: webdriver, timeout: int, kind: By, value: str) -> bo
 # click 하기
 def click(driver: webdriver, timeout: int, kind: By, value: str) -> bool:
     try :
-        fetched = get_elements(driver, timeout, kind, value)
+        fetched = getElements(driver, timeout, kind, value)
         time.sleep(0.5)
         fetched.click()
         return True
@@ -33,19 +33,19 @@ def click(driver: webdriver, timeout: int, kind: By, value: str) -> bool:
         return False
 
 # scroll 끝까지 내리기
-def scroll_down(driver: webdriver):
+def scrollDown(driver: webdriver):
     driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
 # 검색어 입력
 def search(driver: webdriver, keyword: str) :
     search_path = Selector.search_path_kakao
-    search_box = get_elements(driver, By.XPATH, search_path)
+    search_box = getElements(driver, By.XPATH, search_path)
     actions = ActionChains(driver).send_keys_to_element(search_box, keyword).send_keys(Keys.ENTER)
     actions.perform()
 
 # user hash값
-def get_user_hash(driver: webdriver) :
-    buttonFollow = get_elements(driver, 5, By.CLASS_NAME, '_2r43z')
+def getUserHash(driver: webdriver) :
+    buttonFollow = getElements(driver, 5, By.CLASS_NAME, '_2r43z')
 
     for i, j in enumerate(buttonFollow):
         userHashValue = buttonFollow[i].get_attribute('href').split('/')[-2]
