@@ -62,7 +62,7 @@ def scrollDown(driver: webdriver):
 
 
 # 검색어 입력
-def search(driver: webdriver, keyword: str):
+def search(driver: webdriver, keyword: str) :
     search_path = Selector.search_path_kakao
     search_box = getElements(driver, By.XPATH, search_path)
     actions = ActionChains(driver).send_keys_to_element(search_box, keyword).send_keys(Keys.ENTER)
@@ -70,7 +70,7 @@ def search(driver: webdriver, keyword: str):
 
 
 # user hash값
-def getUserHash(driver: webdriver):
+def getUserHash(driver: webdriver) :
     buttonFollow = getElements(driver, 5, By.CLASS_NAME, '_2r43z')
 
     for i, j in enumerate(buttonFollow):
@@ -82,10 +82,10 @@ def getUserHash(driver: webdriver):
 # 도로명 주소 위도 경도 변환
 def geocoding(geoLocal: Nominatim, address: str) -> (float, float):
     address = " ".join(address.split(' ')[:4])
-    try:
+    try :
         geo = geoLocal.geocode(address)
         return geo.latitude, geo.longitude
-    except:
+    except :
         return None, None
 
 
@@ -97,5 +97,28 @@ def constructJson(fileName: str, data: list):
 
 # pickle 파일 생성
 def constructPickle(fileName: str, data):
-    with open(f'{fileName}.pkl', 'wb') as f:
+    with open(f'{fileName}.pkl', 'wb') as f :
         pickle.dump(data, f)
+
+
+# place info dictionary 구조 반환
+def placeInfoDict() -> dict:
+    data = {
+        'placeName': None,
+        'placeType': None,
+        'placeMeanRating': None,
+        'placeAddress': None,
+        'latitude': None,
+        'longitude': None,
+        'telephone': None,
+        'description': None,
+        'menu': dict(),
+        'themeKeywords': [],
+        'agePopularity': dict(),
+        'genderPopularity': dict(),
+        'time': dict(),
+        'visitReviewNum': None,
+        'blogReviewNum': None,
+        'like': dict(),
+    }
+    return data
