@@ -100,9 +100,13 @@ def getPlaceInfo(driver: webdriver, geoLocal: Nominatim, name: str) :
         for value in themeData:
             data['themeKeywords'].append(value.text.split(', ')[-1])
     # get popularity
-    tabList = getElements(driver, 5, By.XPATH, XPath.placeTab)[0].text.replace('\n', ' ').split(' ')
-    if '메뉴' in tabList: divNum += 2
-    else: divNum += 1
+    tabList = getElements(driver, 5, By.XPATH, XPath.placeTab)
+    if tabList :
+        tabList = tabList[0].text.replace('\n', ' ').split(' ')
+        if '메뉴' in tabList : divNum += 2
+        else : divNum += 1
+    else : tabList = []
+
     click(driver, 5, By.XPATH, XPath.datalabMoreButton.format(divNum=divNum))
     if getElements(driver, 5, By.CLASS_NAME, ClassName.popularityClass):
         for idx in range(10, 70, 10):
@@ -154,7 +158,7 @@ if __name__ == '__main__':
     placeList = loadList('./data/name_list.pkl')
 
     dataset, noPlace = [], []
-
+    print(getPlaceInfo(driver, geoLocal, '알베르'))
     for name in placeList :
         result = getPlaceInfo(driver, geoLocal, name)
         if not result : noPlace.append(name)
