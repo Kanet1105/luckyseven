@@ -1,5 +1,5 @@
 class URL :
-    base_url = 'https://map.naver.com/v5/search/{placeName}/place'
+    baseURL = 'https://map.naver.com/v5/search/{placeName}/place'
 
 class Selector:
     # kakao search
@@ -11,13 +11,14 @@ class Selector:
 
 class XPath :
     ## kakao search
-    search_path_kakao = '//*[@id="search.keyword.query"]'
+    searchPathKakao = '//*[@id="search.keyword.query"]'
 
     # get place info
     searchIframe = '//*[@id="searchIframe"]'
     entryIframe = '//*[@id="entryIframe"]'
-    first_fetched = '//*[@id="_pcmap_list_scroll_container"]/ul/li[1]/div[1]/a[1]'
-    menu_tab_path = '//*[@id="app-root"]/div/div/div/div[4]/div/div/div/div/a[{num}]'
+
+    firstFetched = '//*[@id="_pcmap_list_scroll_container"]/ul/li[1]/div[1]/a[1]'
+    menuTabPath = '//*[@id="app-root"]/div/div/div/div[4]/div/div/div/div/a[{num}]'
     menuTab2Path = '//*[@id="app-root"]/div/div/div/div[4]/div/div/div/div/div/div[2]/div/div/a[{num}]/span'
     menuTab3Path = '//*[@id="root"]/div[2]/div/header/div[2]/div/a[{num}]/span'
     menuMoreButton = '//*[@id="app-root"]/div/div/div/div[6]/div/div[1]/div[2]/a'
@@ -37,15 +38,15 @@ class XPath :
 
     placeName = '//*[@id="_title"]/span[1]'
     placeType = '//*[@id="_title"]/span[2]'
-    timeMoreButton = '//*[@id="app-root"]/div/div/div/div[5]/div/div[{div_num}]/div/ul/li[{idx}]/div/a/div/div/span'
-    timeMoreButton2 = '//*[@id="app-root"]/div/div/div/div[6]/div/div[{div_num}]/div/ul/li[{idx}]/div/a/div[1]/div/span'
+    timeMoreButton = '//*[@id="app-root"]/div/div/div/div[5]/div/div[{divNum}]/div/ul/li[{idx}]/div/a/div/div/span'
+    timeMoreButton2 = '//*[@id="app-root"]/div/div/div/div[6]/div/div[{divNum}]/div/ul/li[{idx}]/div/a/div[1]/div/span'
 
-    descriptionMoreButton = '//*[@id="app-root"]/div/div/div/div[5]/div/div[{div_num}]/div/ul/li[{idx}]/div/a/span[2]'
-    descriptionMoreButton2 = '//*[@id="app-root"]/div/div/div/div[6]/div/div[{div_num}]/div/ul/li[{idx}]/div/a/span[2]'
+    descriptionMoreButton = '//*[@id="app-root"]/div/div/div/div[5]/div/div[{divNum}]/div/ul/li[{idx}]/div/a/span[2]'
+    descriptionMoreButton2 = '//*[@id="app-root"]/div/div/div/div[6]/div/div[{divNum}]/div/ul/li[{idx}]/div/a/span[2]'
 
-    description = '//*[@id="app-root"]/div/div/div/div[{div_num1}]/div/div[{div_num2}]/div/ul/li[{idx}]/div/a/span[1]'
-    infoText = '//*[@id="app-root"]/div/div/div/div[5]/div/div[{div_num}]/div/ul/li[{idx}]/div/a/span[1]'
-    datalabMoreButton = '//*[@id="app-root"]/div/div/div/div[6]/div/div[{div_num}]/div[2]/a'
+    description = '//*[@id="app-root"]/div/div/div/div[{divNum1}]/div/div[{divNum2}]/div/ul/li[{idx}]/div/a/span[1]'
+    infoText = '//*[@id="app-root"]/div/div/div/div[5]/div/div[{divNum}]/div/ul/li[{idx}]/div/a/span[1]'
+    datalabMoreButton = '//*[@id="app-root"]/div/div/div/div[6]/div/div[{divNum}]/div[2]/a'
 
     reviewNum = '//*[@id="app-root"]/div/div/div/div[2]/div[1]/div[2]/span[{num}]/a/em'
     placeTab = '//*[@id="app-root"]/div/div/div/div[4]/div/div/div/div'
