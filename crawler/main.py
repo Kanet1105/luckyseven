@@ -5,8 +5,8 @@ import pickle
 from common.util import *
 from common.config import *
 
-def load_driver(driver_path: str):
-    service = Service(driver_path)
+def loadDriver(driverPath: str):
+    service = Service(driverPath)
     option = webdriver.ChromeOptions()
     option.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
                         'Chrome/101.0.4951.41 Safari/537.36')
@@ -14,8 +14,8 @@ def load_driver(driver_path: str):
     return driver
 
 
-def load_list(list_path: str) -> list:
-    with open(list_path, 'rb') as fp:
+def loadList(listPath: str) -> list:
+    with open(listPath, 'rb') as fp:
         return pickle.load(fp)
 
 def getPlaceName():
