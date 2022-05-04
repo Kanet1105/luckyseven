@@ -2,7 +2,8 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 import pickle
-
+from common.util import *
+from common.config import *
 
 def load_driver(driver_path: str):
     service = Service(driver_path)
@@ -17,8 +18,15 @@ def load_list(list_path: str) -> list:
     with open(list_path, 'rb') as fp:
         return pickle.load(fp)
 
+def getPlaceName():
+    driver = load_driver('chromedriver.exe')
+    name = set(getNamelist(driver=driver, sub_list=Subway))
+    constructPickle('name_list', name)
+
+
 
 if __name__ == '__main__':
+    getPlaceName()
     ########
     # fill #
     ########
