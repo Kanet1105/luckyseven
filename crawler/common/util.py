@@ -18,7 +18,7 @@ from config import *
 
 # elements list 반환
 from common.config import *
-
+from common.network import *
 
 def getElements(driver: webdriver, timeout: int, kind: By, value: str) -> list:
     try:
@@ -144,7 +144,6 @@ def placeInfoDict() -> dict:
     data = {
         'placeName': None,
         'placeType': None,
-        'placeMeanRating': None,
         'placeAddress': None,
         'latitude': None,
         'longitude': None,
@@ -155,6 +154,7 @@ def placeInfoDict() -> dict:
         'agePopularity': dict(),
         'genderPopularity': dict(),
         'time': dict(),
+        'placeMeanRating': None,
         'visitReviewNum': None,
         'blogReviewNum': None,
         'like': dict(),
@@ -278,6 +278,9 @@ def getReviewInfo(driver: webdriver, placeName: str):
 
         # 각 리뷰에서 정보 가져오기
         for i in range(len(reviewElements)):
+            pl = Payload()
+            reviewData = pl.reviewInfo
+            userData = pl.userInfo
 
             click(reviewElements[i], 1, By.CLASS_NAME, ClassName.reviewMorePointButtonClass)
             click(reviewElements[i], 1, By.CLASS_NAME, ClassName.reviewMoreContentButtonClass)
@@ -327,10 +330,13 @@ def getReviewInfo(driver: webdriver, placeName: str):
 
             review.append(result)
             print(result) #########이부분 sendData
+            sendData('reviewInfo', reviewData)
+            sendData('userInfo', userData)
 
 
 def getPlaceInfoDetails(driver: webdriver, geoLocal: Nominatim, name: str):
-    data = placeInfoDict()
+    pl = Payload()
+    data = pl.placeInfo
 
     # search the place
     driver.get(URL.baseURL.format(placeName=name))
