@@ -24,11 +24,12 @@ def loadList(listPath: str) -> list:
 def getPlaceInfo() :
     driver = loadDriver('chromedriver_win32/chromedriver.exe')
     geoLocal = Nominatim(user_agent='South Korea')
-    placeList = loadList('./data/name_list.pkl')
+    placeList = loadList('./data/name_list_all.pkl')
     dataset, noPlace = [], []
-    for name in placeList:
+    for name, address in placeList:
+        placeName = name + address
         if name == '7%칠백식당 신논현직영점': continue
-        result = getPlaceInfoDetails(driver, geoLocal, name)
+        result = getPlaceInfoDetails(driver, geoLocal, placeName)
         if not result:
             noPlace.append(name)
         else:
