@@ -2,6 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 import pickle
+
 from geopy.geocoders import Nominatim
 
 from common.config import URL, XPath, Selector, ClassName
@@ -18,6 +19,12 @@ def loadDriver(driverPath: str):
 def loadList(listPath: str) -> list:
     with open(listPath, 'rb') as fp:
         return pickle.load(fp)
+
+def getPlaceName():
+    driver = load_driver('chromedriver.exe')
+    name = set(getNamelist(driver=driver, sub_list=Subway))
+    constructPickle('name_list', name)
+
 
 
 def getPlaceInfo(driver: webdriver, geoLocal: Nominatim, name: str) :
@@ -158,6 +165,7 @@ def getPlaceInfo(driver: webdriver, geoLocal: Nominatim, name: str) :
     return data
 
 if __name__ == '__main__':
+    #getPlaceName()
     driver = loadDriver('chromedriver_win32/chromedriver.exe')
     geoLocal = Nominatim(user_agent='South Korea')
     placeList = loadList('./data/name_list.pkl')
@@ -174,3 +182,4 @@ if __name__ == '__main__':
 
     constructJson('./data/place_information', dataset)
     constructPickle('./data/no_place', noPlace)
+
