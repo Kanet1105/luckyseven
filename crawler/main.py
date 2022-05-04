@@ -79,11 +79,15 @@ def getPlaceInfo(driver: webdriver, geoLocal: Nominatim, name: str) :
         if infoText[0] == '영업시간':
             # more buttom click
             if not click(driver, 5, By.XPATH, XPath.timeMoreButton.format(divNum=divNum, idx=index)):
-                click(driver, 5, By.XPATH, XPath.timeMoreButton2.format(divNum=divNum, idx=index))
+                if not click(driver, 5, By.XPATH, XPath.timeMoreButton2.format(divNum=divNum, idx=index)):
+                    click(driver, 5, By.XPATH, XPath.timeMoreButton3.format(divNum=divNum, idx=index))
+
             dayList = getElements(driver, 5, By.CLASS_NAME, ClassName.dayClass)
-            timeList = getElements(driver, 5, By.CLASS_NAME, ClassName.timeClass)[1:]
+            timeList = getElements(driver, 5, By.CLASS_NAME, ClassName.timeClass)
+            if not dayList or not timeList:
+                continue
             for idx in range(len(dayList)):
-                data['time'][dayList[idx].text] = timeList[idx].text
+                data['time'][dayList[idx].text] = timeList[1:][idx].text
         elif infoText[0] == '설명':
             if not click(driver, 5, By.XPATH, XPath.descriptionMoreButton.format(divNum=divNum, idx=index)):
                 click(driver, 5, By.XPATH, XPath.descriptionMoreButton2.format(divNum=divNum, idx=index))
@@ -132,7 +136,8 @@ def getPlaceInfo(driver: webdriver, geoLocal: Nominatim, name: str) :
             else:
                 menuList = getElements(driver, 5, By.CLASS_NAME, ClassName.menuListClass)
                 menuPrice = getElements(driver, 5, By.CLASS_NAME, ClassName.menuPriceClass)
-
+            if not menuList :
+                continue
             for menu_idx in range(len(menuList) - 1):
                 data['menu'][menuList[menu_idx].text] = menuPrice[menu_idx].text
         if tab == '리뷰':
@@ -157,13 +162,15 @@ if __name__ == '__main__':
     geoLocal = Nominatim(user_agent='South Korea')
     placeList = loadList('./data/name_list.pkl')
 
+    result = getPlaceInfo(driver, geoLocal, '고기꾼김춘배 강남점')
+
     dataset, noPlace = [], []
-    print(getPlaceInfo(driver, geoLocal, '알베르'))
     for name in placeList :
+        if name == '7%칠백식당 신논현직영점' : continue
         result = getPlaceInfo(driver, geoLocal, name)
         if not result : noPlace.append(name)
         else :
             dataset.append(result)
 
-    constructJson('place_information', dataset)
-    constructPickle('no_place.pkl', noPlace)
+    constructJson('./data/place_information', dataset)
+    constructPickle('./data/no_place', noPlace)
