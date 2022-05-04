@@ -42,7 +42,7 @@ class XPath:
     placeType = '//*[@id="_title"]/span[2]'
     timeMoreButton = '//*[@id="app-root"]/div/div/div/div[5]/div/div[{divNum}]/div/ul/li[{idx}]/div/a/div/div/span'
     timeMoreButton2 = '//*[@id="app-root"]/div/div/div/div[6]/div/div[{divNum}]/div/ul/li[{idx}]/div/a/div[1]/div/span'
-
+    timeMoreButton3= '//*[@id="app-root"]/div/div/div/div[6]/div/div[{divNum}]/div/ul/li[{idx}]/div/a/div[1]/div/div/div/span[2]'
     descriptionMoreButton = '//*[@id="app-root"]/div/div/div/div[5]/div/div[{divNum}]/div/ul/li[{idx}]/div/a/span[2]'
     descriptionMoreButton2 = '//*[@id="app-root"]/div/div/div/div[6]/div/div[{divNum}]/div/ul/li[{idx}]/div/a/span[2]'
 
