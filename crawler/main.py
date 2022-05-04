@@ -2,7 +2,6 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 import pickle
-
 from geopy.geocoders import Nominatim
 
 from common.config import URL, XPath, Selector, ClassName
@@ -22,7 +21,7 @@ def loadList(listPath: str) -> list:
         return pickle.load(fp)
 
 def getPlaceName():
-    driver = load_driver('chromedriver.exe')
+    driver = loadDriver('chromedriver.exe')
     name = set(getNamelist(driver=driver, sub_list=Subway))
     constructPickle('name_list', name)
 
@@ -30,7 +29,8 @@ def getPlaceInfo() :
     driver = loadDriver('chromedriver_win32/chromedriver.exe')
     geoLocal = Nominatim(user_agent='South Korea')
     placeList = loadList('./data/name_list_all.pkl')
-    dataset, noPlace = [], []
+    #dataset, noPlace = [], []
+    noPlace = []
     for name, address in placeList:
         placeName = name + address
         if name == '7%칠백식당 신논현직영점': continue
@@ -38,8 +38,9 @@ def getPlaceInfo() :
         if not result:
             noPlace.append(name)
         else:
-            dataset.append(result)
-    constructJson('./data/place_information', dataset)
+            sendData('placeInfo', result)
+            #dataset.append(result)
+    #constructJson('./data/place_information', dataset)
     constructPickle('./data/no_place', noPlace)
 
 
