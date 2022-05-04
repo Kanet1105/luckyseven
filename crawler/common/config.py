@@ -1,10 +1,16 @@
+class Subway:
+    sub_list = ['까치산', '시청', '을지로입구', '을지로3가', '을지로4가', '동대문역사문화공원', '신당', '상왕십리', '왕십리', '한양대', '뚝섬', '성수', '건대입구',
+                '구의', '강변', '잠실나루', '잠실', '잠실새내', '종합운동장', '삼성', '선릉', '역삼', '강남', '교대', '서초', '방배', '사당', '낙성대',  '서울대입구',
+                '봉천', '신림', '신대방', '구로디지털단지', '대림', '신도림', '문래', '영등포구청', '당산', '합정', '홍대입구', '신촌', '이대', '아현', '충정로',
+                '용답', '신답', '신설동', '도림천', '양천구청', '신정네거리', '용두',
+                '강남', '양재', '양재시민의숲', '청계산입구', '판교', '정자', '미금', '동천', '수지구청', '성복', '상현', '광교중앙', '광교']
+
 class URL:
     baseURL = 'https://map.naver.com/v5/search/{placeName}/place'
-
+    #kakao
+    basePath = 'https://map.kakao.com/'
 
 class Selector:
-    # kakao search
-
     # get place info
     informationSelector = '#app-root > div > div > div > div:nth-child({num}) > div > div.place_section.no_margin._18vYz > div > ul > li'
 
@@ -14,6 +20,19 @@ class Selector:
 class XPath:
     ## kakao search
     searchPathKakao = '//*[@id="search.keyword.query"]'
+
+    ## kakao item_shield
+    sheild = '//*[@id="dimmedLayer"]'
+
+    ## kakao more
+    more = '//*[@id="info.search.place.more"]'
+
+
+    ## kakao page_no
+    pageNo = '//*[@id="info.search.page.no{}"]'
+
+    ## kakap nextpage
+    nextPage =  '//*[@id="info.search.page.next"]'
 
     # get place info
     searchIframe = '//*[@id="searchIframe"]'
@@ -58,7 +77,12 @@ class XPath:
 
 
 class ClassName:
-    # kakao search
+
+    # kakao place
+    place_kakao = 'link_name'
+
+    # kakao address
+    addr_kakao = 'addr'
 
     # get place info
     menuClass = '_2kAri'
