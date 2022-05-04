@@ -1,17 +1,19 @@
+import pickle
+
 from selenium import webdriver
+import json
+import pandas as pd
+import re
+
+from selenium.webdriver import ActionChains
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver import ActionChains
-from geopy.geocoders import Nominatim
 import time
-import json
-import pickle
 import traceback
-
-from common.config import URL, Selector, XPath, ClassName
-
+from geopy.geocoders import Nominatim
+from config import Selector
 
 # elements list 반환
 def getElements(driver: webdriver, timeout: int, kind: By, value: str) -> list:
@@ -34,7 +36,6 @@ def getValue(driver: webdriver, timeout: int, kind: By, value: str) -> str:
     except:
         return None
 
-
 # iframe 전환
 def switchToFrame(driver: webdriver, timeout: int, kind: By, value: str) -> bool:
     try:
@@ -42,7 +43,9 @@ def switchToFrame(driver: webdriver, timeout: int, kind: By, value: str) -> bool
             EC.frame_to_be_available_and_switch_to_it((kind, value))
         )
         return ack
-    except: return False
+
+    except:
+        return False
 
 
 # click 하기
@@ -63,7 +66,7 @@ def scrollDown(driver: webdriver):
     driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
 
-# 검색어 입력
+# 검색어 입력    
 def search(driver: webdriver, keyword: str) :
     search_path = XPath.searchPathKakao
     search_box = getElements(driver, 0.5, By.XPATH, search_path)
@@ -72,7 +75,7 @@ def search(driver: webdriver, keyword: str) :
 
 
 # user hash값
-def getUserHash(driver: webdriver) :
+def getUserHash(driver: webdriver):
     buttonFollow = getElements(driver, 5, By.CLASS_NAME, '_2r43z')
 
     for i, j in enumerate(buttonFollow):
@@ -84,10 +87,10 @@ def getUserHash(driver: webdriver) :
 # 도로명 주소 위도 경도 변환
 def geocoding(geoLocal: Nominatim, address: str) -> (float, float):
     address = " ".join(address.split(' ')[:4])
-    try :
+    try:
         geo = geoLocal.geocode(address)
         return geo.latitude, geo.longitude
-    except :
+    except:
         return None, None
 
 
@@ -99,7 +102,7 @@ def constructJson(fileName: str, data: list):
 
 # pickle 파일 생성
 def constructPickle(fileName: str, data):
-    with open(f'{fileName}.pkl', 'wb') as f :
+    with open(f'{fileName}.pkl', 'wb') as f:
         pickle.dump(data, f)
 
 

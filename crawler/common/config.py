@@ -74,7 +74,9 @@ class XPath:
     homePath = '//*[@id="app-root"]/div/div/div/div[4]/div/div/div/div/a[1]/span'
 
     # get review
-
+    reviewTab = '//*[@id="app-root"]/div/div/div/div[4]/div/div/div/div/a[{index}]/span'
+    #reviewCount = '//*[@id="app-root"]/div/div/div/div[6]/div[{index}]/div[3]/h2/span[2]'
+    reviewCount = '//*[@id="app-root"]/div/div/div/div[6]/div[3]/div[3]/h2/span[1]'
 
 class ClassName:
 
@@ -122,3 +124,21 @@ class ClassName:
     donutGraphClass = 'c3-chart'
 
     # get review
+    reviewTabClass = '_3aXen'
+    reviewCountClass = 'place_section_count'
+    reviewMoreButtonClass = '_3iTUo'
+    reviewClass = '_3FaRE'
+    reviewMoreContentButtonClass = 'M_704' # '_3Dnsh'
+    reviewMorePointButtonClass = '_1fvo3 _22igH'
+
+    reviewUserId = '_16RxQ'
+    reviewUserHash1 = '_2r43z'
+    reviewUserHash2 = '_1fvo3'
+    reviewContent = 'WoYOw'
+    reviewPoint1 = '_3oMpH'
+    reviewPoint2 = '_1fvo3'
+    reviewInfo1 = '_3-LAD'
+    reviewInfo2 = '_1fvo3'
+
+    recentClass = '_3WQBd'
+
