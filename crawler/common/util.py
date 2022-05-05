@@ -8,9 +8,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from geopy.geocoders import Nominatim
-
-from common.config import *
-from common.network import *
+from .config import *
+from .network import *
 
 
 # element 여러개 반환
@@ -42,7 +41,6 @@ def switchToFrame(driver: webdriver, timeout: int, kind: By, value: str) -> bool
             EC.frame_to_be_available_and_switch_to_it((kind, value))
         )
         return ack
-
     except:
         return False
 

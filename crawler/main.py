@@ -1,6 +1,7 @@
 from common.util import *
 from selenium.webdriver.chrome.service import Service
 
+
 # Driver load & get place list
 def loadDriver(driver_path: str):
     service = Service(driver_path)
@@ -32,9 +33,9 @@ def getReview(driver:webdriver):
 
 
 # 장소 정보
-def getPlaceInfo(driver:webdriver) :
+def getPlaceInfo(driver:webdriver):
     geoLocal = Nominatim(user_agent='South Korea')
-    placeList = loadList('./data/name_list_all.pkl')
+    placeList = loadList('name_list_all.pkl')
     noPlace = []
     for name, address in placeList:
         placeName = name + " " + address
@@ -46,8 +47,7 @@ def getPlaceInfo(driver:webdriver) :
 
 
 if __name__ == '__main__':
-    driver = loadDriver('chromedriver_win32/chromedriver.exe')
+    driver = loadDriver('D:\\PythonProjects\\L7D\\chromedriver_win32\\chromedriver.exe')
     getPlaceInfo(driver)
     #getPlaceName(driver)
     # getReview(driver)
-

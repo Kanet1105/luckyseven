@@ -5,15 +5,16 @@ class Subway:
                 '용답', '신답', '신설동', '도림천', '양천구청', '신정네거리', '용두',
                 '강남', '양재', '양재시민의숲', '청계산입구', '판교', '정자', '미금', '동천', '수지구청', '성복', '상현', '광교중앙', '광교']
 
+
 class URL:
     baseURL = 'https://map.naver.com/v5/search/{placeName}/place'
     # kakao
     basePath = 'https://map.kakao.com/'
 
+
 class Selector:
     # get place info
     informationSelector = '#app-root > div > div > div > div:nth-child({num}) > div > div.place_section.no_margin._18vYz > div > ul > li'
-
 
 
 class XPath:
@@ -66,6 +67,7 @@ class XPath:
     # get review
     reviewTab = '//*[@id="app-root"]/div/div/div/div[4]/div/div/div/div/a[{index}]/span'
     reviewCount = '//*[@id="app-root"]/div/div/div/div[6]/div[3]/div[3]/h2/span[1]'
+
 
 class ClassName:
 
@@ -128,4 +130,3 @@ class ClassName:
     reviewInfo2 = '_1fvo3'
 
     recentClass = '_3WQBd'
-
