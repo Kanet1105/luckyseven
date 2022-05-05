@@ -279,10 +279,10 @@ def getReviewInfo(driver: webdriver, placeName: str, address: str, prevNum: int)
                 # 중복 상관없이 유저 정보 저장
                 userData['userHash'] = reviewUserHash['userHash']
                 userData['userID'] = reviewUserId
-                userData['userInfoReviewCount'] = reviewUserHash['review']
-                userData['userInfoPictureCount'] = reviewUserHash['photo']
-                userData['userInfoFollowingCount'] = reviewUserHash['following']
-                userData['userInfoFollowerCount'] = reviewUserHash['follower']
+                userData['reviewNum'] = reviewUserHash['review']
+                userData['photo'] = reviewUserHash['photo']
+                userData['following'] = reviewUserHash['following']
+                userData['follower'] = reviewUserHash['follower']
 
                 reviewData['userHash'] = reviewUserHash['userHash']
                 reviewData['reviewUserID'] = reviewUserId
@@ -296,9 +296,8 @@ def getReviewInfo(driver: webdriver, placeName: str, address: str, prevNum: int)
                 print(userData)
                 print(reviewData)
                 # print(reviewData) # 디버깅을 위한 출력
-                # 논의 사항
-                # sendData('reviewInfo', reviewData)
-                # sendData('userInfo', userData)
+                sendData("ReviewInfoModel", reviewData)
+                sendData("UserInfoModel", userData)
         prevNum = len(reviewElements)
         if finish or not click(driver, 2, By.CLASS_NAME, ClassName.reviewMoreButtonClass):
             break
@@ -433,7 +432,7 @@ def getPlaceInfoDetails(driver: webdriver, geoLocal: Nominatim, name: str):
             for idx in range(len(likeNum)):
                 data['like'][likeTopic[idx].text] = int(likeNum[idx].text.split('\n')[-1])
 
-    sendData('placeInfo', data)
+    sendData("PlaceInfoModel", data)
     print(data)
     getReviewInfo(driver, data['placeName'], data['placeAddress'], len(data['like']))
 

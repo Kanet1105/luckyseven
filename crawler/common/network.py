@@ -1,6 +1,7 @@
 import requests
 
-HOST = 'http://127.0.0.1:8000/data'
+HOST = 'http://127.0.0.1:8000/{uri}'
+
 
 class Payload:
     placeInfo = {
@@ -38,7 +39,7 @@ class Payload:
         'userID': None,
         'reviewNum': None,
         'photo': None,
-        'folloing': None,
+        'following': None,
         'follower': None,
     }
 
@@ -47,8 +48,8 @@ class Payload:
         'placeAddress': None
     }
 
+
 def sendData(kind: str, data: dict):
     # requests.post 로 데이터 전송
-    headers = {'kind' : kind}
-    result = requests.post(url=HOST, json=data, headers=headers)
+    result = requests.post(url=HOST.format(uri=kind), json=data)
     print(result)

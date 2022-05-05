@@ -38,13 +38,22 @@ class UserInfoModel(BaseModel):
     userID: str
     reviewNum: int
     photo: int
-    folloing: int
+    following: int
     follower: int
 
 
 app = FastAPI()
 
-@app.post('/data')
+@app.post('/PlaceInfoModel')
 async def receiveData(data: PlaceInfoModel):
     print(data)
 
+
+@app.post('/ReviewInfoModel')
+async def receiveData(data: ReviewInfoModel):
+    print(data)
+
+
+@app.post('/UserInfoModel')
+async def receiveData(data: UserInfoModel):
+    print(data)
