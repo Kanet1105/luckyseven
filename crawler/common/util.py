@@ -192,16 +192,21 @@ def getHashValue(driver: webdriver, timeout: int, kind: By, value1: str, value2:
             EC.visibility_of_element_located((kind, value1))
         )
         userInfo['userHash'] = element1.get_attribute('href').split('/')[-2]
-        userInfo['리뷰'] = None
-        userInfo['사진'] = None
-        userInfo['팔로잉'] = None
-        userInfo['팔로워'] = None
+        userInfo['리뷰'] = 0
+        userInfo['사진'] = 0
+        userInfo['팔로잉'] = 0
+        userInfo['팔로워'] = 0
         # 포함된 user의 정보 가져오기
         element2 = getElements(element1, timeout, kind, value2)
         if element2 != None:
             for i in element2:
                 info = i.text.split(' ')
                 userInfo[info[0]] = info[1]
+
+        userInfo['리뷰'] = int(userInfo['리뷰'])
+        userInfo['사진'] = int(userInfo['사진'])
+        userInfo['팔로잉'] = int(userInfo['팔로잉'])
+        userInfo['팔로워'] = int(userInfo['팔로워'])
 
         return userInfo
     except:
@@ -224,22 +229,21 @@ def getReviewSubInfo(driver: webdriver, timeout: int, kind: By, value1: str, val
                 if '방문일' in i.text:
                     reviewInfo['visitDay'] = i.text.split('\n')[1]
                 if '번째' in i.text:
-                    reviewInfo['visitCount'] = int(i.text.split('\n')[0].strip('번째 방문'))
+                    reviewInfo['visitCount'] = i.text.split('\n')[0].strip('번째 방문')
                 if '별점' in i.text:
                     reviewInfo['score'] = i.text.split('\n')[1]
+        try:
+            reviewInfo['visitCount'] = int(reviewInfo['visitCount'])
+        except:
+            reviewInfo['visitCount'] = -1
 
         return reviewInfo
     except:
         return None
 
 
-def getReviewInfo(driver: webdriver, placeName: str):
+def getReviewInfo(driver: webdriver, placeName: str, name:str, address:str):
     print(placeName)
-    print("OK")
-
-    review = []  # element: list
-    user = []  # element: dict
-    userHash = set()  # user의 hashvalue 저장
 
     # search the place
     driver.get(URL.baseURL.format(placeName=placeName))
@@ -301,37 +305,41 @@ def getReviewInfo(driver: webdriver, placeName: str):
             reviewInfo = getReviewSubInfo(reviewElements[i], 1, By.CLASS_NAME, ClassName.reviewInfo1,
                                        ClassName.reviewInfo2)
 
+            # 올해 리뷰가 아니면 break
             if reviewInfo != None:
                 if len(reviewInfo['visitDay'].split('.')) != 3:
                     break
 
-            if reviewUserHash == None:
-                continue
 
-            if reviewUserHash['userHash'] not in userHash:
-                reviewUserHash['userId'] = reviewUserId
-                userHash.add(reviewUserHash['userHash'])
-                user.append(reviewUserHash)
+            # 중복 상관없이 유저 정보 저장
+            reviewUserHash['userId'] = reviewUserId
 
-                print(reviewUserHash['userHash']) #########이부분 sendData -> 유니크 유저 해시값
-                print(reviewUserHash) #########이부분 sendData -> 리뷰 마다 유저 정보 send
+            userData['userHash'] = reviewUserHash['userHash']
+            userData['userID'] = reviewUserHash['userId']
+            userData['userInfoReviewCount'] = reviewUserHash['리뷰']
+            userData['userInfoPictureCount'] = reviewUserHash['사진']
+            userData['userInfoFollowingCount'] = reviewUserHash['팔로잉']
+            userData['userInfoFollowerCount'] = reviewUserHash['팔로워']
 
-            # 0. 유저 해시값
-            # 1. 아이디
-            # 2. 내용
-            # 3. 평점
-            # 4. 날짜
-            # 5. 방문횟수
 
             result = [
                 reviewUserHash['userHash'], reviewUserId, reviewContent, reviewInfo['score'], reviewInfo['visitDay'],
                 reviewInfo['visitCount']
             ]
 
-            review.append(result)
-            print(result) #########이부분 sendData
-            sendData('reviewInfo', reviewData)
-            sendData('userInfo', userData)
+            reviewData['userHash'] = reviewUserHash['userHash']
+            reviewData['reviewUserID'] = reviewUserId
+            reviewData['placeName'] = name
+            reviewData['placeAddress'] = address
+            reviewData['reviewContent'] = reviewContent
+            reviewData['reviewInfoScore'] = reviewInfo['score']
+            reviewData['reviewInfoVisitDay'] = reviewInfo['visitDay']
+            reviewData['reviewInfoVisitCount'] = reviewInfo['visitCount']
+
+
+            print(reviewData)
+            sendData('review', 'reviewInfo', reviewData)
+            #sendData('userInfo', userData)
 
 
 

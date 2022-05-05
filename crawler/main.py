@@ -33,7 +33,7 @@ def getReview(driver:webdriver):
     for name, address in placeList:
         placeName = name + " " + address
         if name == '7%칠백식당 신논현직영점': continue
-        result = getReviewInfo(driver, placeName)
+        result = getReviewInfo(driver, placeName, name, address)
 
 def getPlaceInfo(driver:webdriver) :
     geoLocal = Nominatim(user_agent='South Korea')
@@ -54,5 +54,6 @@ if __name__ == '__main__':
     driver = loadDriver('chromedriver_win32/chromedriver.exe')
     #getPlaceInfo(driver)
     #getPlaceName(driver)
-    getReview(driver)
+    # getReview(driver)
 
+    getReviewInfo(driver, '카페테라', '카페테라', '경기 수원시 장안구 대평로 80 정연메이져 127호'),
