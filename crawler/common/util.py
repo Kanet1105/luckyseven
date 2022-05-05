@@ -210,7 +210,7 @@ def getHashValue(driver: webdriver, timeout: int, kind: By, value1: str, value2:
 def getReviewSubInfo(driver: webdriver, timeout: int, kind: By, value1: str, value2: str):
     reviewInfo = dict()
     reviewInfo['visitDay'] = None
-    reviewInfo['visitCount'] = None
+    reviewInfo['visitCount'] = 0
     reviewInfo['score'] = None
     try:
         element1 = WebDriverWait(driver, timeout).until(
@@ -224,7 +224,7 @@ def getReviewSubInfo(driver: webdriver, timeout: int, kind: By, value1: str, val
                 if '방문일' in i.text:
                     reviewInfo['visitDay'] = i.text.split('\n')[1]
                 if '번째' in i.text:
-                    reviewInfo['visitCount'] = i.text.split('\n')[0].strip('번째 방문')
+                    reviewInfo['visitCount'] = int(i.text.split('\n')[0].strip('번째 방문'))
                 if '별점' in i.text:
                     reviewInfo['score'] = i.text.split('\n')[1]
 
@@ -327,6 +327,7 @@ def getReviewInfo(driver: webdriver, placeName: str):
 
             review.append(result)
             print(result) #########이부분 sendData
+
 
 
 def getPlaceInfoDetails(driver: webdriver, geoLocal: Nominatim, name: str):
