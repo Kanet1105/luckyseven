@@ -114,7 +114,7 @@ def getPageList(driver: webdriver, no):
     address = getElements(driver, 1, By.CLASS_NAME, ClassName.addr_kakao)  # 페이지 내 모든 음식점 주소 반환
     for i in range(len(name)):
         if name[i].text not in nameList:
-            nameList.append((name[i].text, " ".join(address[i].text.split()[:4])))
+            nameList.append((name[i].text.replace('%', '%20'), " ".join(address[i].text.split()[:4])))
             # print((name[i].text, " ".join(address[i].text.split()[:4])))  # 디버깅위해 출력
     return nameList
 
@@ -304,13 +304,7 @@ def getReviewInfo(driver: webdriver, placeName: str, address: str, prevNum: int)
             break
 
 
-def getPlaceInfoDetails(driver: webdriver, geoLocal: Nominatim, name: str):
-    pl = Payload()
-    data = pl.placeInfo
-
-    # search the place
-    driver.get(URL.baseURL.format(placeName=name))
-
+def loadPlacePage(driver: webdriver):
     # switch to the search iframe
     switchToFrame(driver, 5, By.XPATH, XPath.searchIframe)
 
@@ -320,6 +314,17 @@ def getPlaceInfoDetails(driver: webdriver, geoLocal: Nominatim, name: str):
     # switch to the entery iframe
     driver.switch_to.parent_frame()
     if not switchToFrame(driver, 5, By.XPATH, XPath.entryIframe):
+        return False
+    return True
+
+def getPlaceInfoDetails(driver: webdriver, geoLocal: Nominatim, name: str):
+    pl = Payload()
+    data = pl.placeInfo
+
+    # search the place
+    driver.get(URL.baseURL.format(placeName=name))
+
+    if not loadPlacePage(driver):
         print("No place : ", name)
         return None
 
@@ -413,6 +418,9 @@ def getPlaceInfoDetails(driver: webdriver, geoLocal: Nominatim, name: str):
         if menuList :
             for menu_idx in range(len(menuList) - 1):
                 data['menu'][menuList[menu_idx].text] = menuPrice[menu_idx].text
+
+    driver.refresh()
+    loadPlacePage(driver)
     if clickTab(driver, '리뷰'):  # get Like
         while click(driver, 5, By.CLASS_NAME, ClassName.likeMoreClass):
             if getValue(driver, 5, By.CLASS_NAME, ClassName.likeMoreClass) != "더보기": break

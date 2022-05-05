@@ -39,7 +39,6 @@ def getPlaceInfo(driver:webdriver) :
     noPlace = []
     for name, address in placeList:
         placeName = name + " " + address
-        if name == '7%칠백식당 신논현직영점': continue
         result = getPlaceInfoDetails(driver, geoLocal, placeName)
         if not result:
             noPlace.append(name)
