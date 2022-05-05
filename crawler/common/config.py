@@ -7,38 +7,29 @@ class Subway:
 
 class URL:
     baseURL = 'https://map.naver.com/v5/search/{placeName}/place'
-    #kakao
+    # kakao
     basePath = 'https://map.kakao.com/'
 
 class Selector:
     # get place info
     informationSelector = '#app-root > div > div > div > div:nth-child({num}) > div > div.place_section.no_margin._18vYz > div > ul > li'
 
-    # get review
 
 
 class XPath:
-    ## kakao search
-    searchPathKakao = '//*[@id="search.keyword.query"]'
+    ## kakao map
+    searchPathKakao = '//*[@id="search.keyword.query"]' # search
+    sheild = '//*[@id="dimmedLayer"]' # item_shield
+    more = '//*[@id="info.search.place.more"]' # more
+    pageNo = '//*[@id="info.search.page.no{}"]' # page_no
+    nextPage =  '//*[@id="info.search.page.next"]' # nextpage
 
-    ## kakao item_shield
-    sheild = '//*[@id="dimmedLayer"]'
-
-    ## kakao more
-    more = '//*[@id="info.search.place.more"]'
-
-
-    ## kakao page_no
-    pageNo = '//*[@id="info.search.page.no{}"]'
-
-    ## kakap nextpage
-    nextPage =  '//*[@id="info.search.page.next"]'
-
-    # get place info
+    # naver map
     searchIframe = '//*[@id="searchIframe"]'
     entryIframe = '//*[@id="entryIframe"]'
-
     firstFetched = '//*[@id="_pcmap_list_scroll_container"]/ul/li[1]/div[1]/a[1]'
+
+    # place info
     menuTabPath = '//*[@id="app-root"]/div/div/div/div[4]/div/div/div/div/a[{num}]'
     menuTab2Path = '//*[@id="app-root"]/div/div/div/div[4]/div/div/div/div/div/div[2]/div/div/a[{num}]/span'
     menuTab3Path = '//*[@id="root"]/div[2]/div/header/div[2]/div/a[{num}]/span'
@@ -55,7 +46,6 @@ class XPath:
 
     reviewPath = '//*[@id="app-root"]/div/div/div/div[4]/div/div/div/div/a[3]/span'
     timePath = '//*[@id="app-root"]/div/div/div/div[5]/div/div[1]/div/ul/li[4]/div/a/div/div/span'
-
 
     placeName = '//*[@id="_title"]/span[1]'
     placeType = '//*[@id="_title"]/span[2]'
@@ -75,16 +65,13 @@ class XPath:
 
     # get review
     reviewTab = '//*[@id="app-root"]/div/div/div/div[4]/div/div/div/div/a[{index}]/span'
-    #reviewCount = '//*[@id="app-root"]/div/div/div/div[6]/div[{index}]/div[3]/h2/span[2]'
     reviewCount = '//*[@id="app-root"]/div/div/div/div[6]/div[3]/div[3]/h2/span[1]'
 
 class ClassName:
 
-    # kakao place
-    place_kakao = 'link_name'
-
-    # kakao address
-    addr_kakao = 'addr'
+    # kakao
+    place_kakao = 'link_name' # place
+    addr_kakao = 'addr' #address
 
     # get place info
     menuClass = '_2kAri'

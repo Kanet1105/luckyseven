@@ -1,15 +1,8 @@
-from common.util import *
-import pickle
-import json
-from selenium import webdriver
-from common.config import URL, XPath, Selector, ClassName
-from geopy.geocoders import Nominatim
-from common.util import *
-from geopy.geocoders import Nominatim
-from common.config import URL, XPath, Selector, ClassName
+# common
 from common.util import *
 from common.network import *
 
+# Driver load & get place list
 def loadDriver(driver_path: str):
     service = Service(driver_path)
     option = webdriver.ChromeOptions()
@@ -19,15 +12,19 @@ def loadDriver(driver_path: str):
     driver = webdriver.Chrome(service=service, options=option)
     return driver
 
+
 def loadList(listPath: str) -> list:
     with open(listPath, 'rb') as fp:
         return pickle.load(fp)
 
+
+# 장소 이름
 def getPlaceName(driver:webdriver):
     name = set(getNamelist(driver=driver, sub_list=Subway))
     constructPickle('name_list', name)
 
-# 리뷰 정보 모으기
+
+# 리뷰 정보
 def getReview(driver:webdriver):
     placeList = loadList('./data/name_list_all.pkl')
     for name, address in placeList:
@@ -35,6 +32,8 @@ def getReview(driver:webdriver):
         if name == '7%칠백식당 신논현직영점': continue
         result = getReviewInfo(driver, placeName, name, address)
 
+
+# 장소 정보
 def getPlaceInfo(driver:webdriver) :
     geoLocal = Nominatim(user_agent='South Korea')
     placeList = loadList('./data/name_list_all.pkl')
@@ -47,6 +46,7 @@ def getPlaceInfo(driver:webdriver) :
             noPlace.append(name)
         else:
             sendData('placeInfo', result)
+
     constructPickle('./data/no_place', noPlace)
 
 
@@ -56,4 +56,3 @@ if __name__ == '__main__':
     #getPlaceName(driver)
     # getReview(driver)
 
-    getReviewInfo(driver, '카페테라', '카페테라', '경기 수원시 장안구 대평로 80 정연메이져 127호'),
