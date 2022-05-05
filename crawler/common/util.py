@@ -317,6 +317,7 @@ def loadPlacePage(driver: webdriver):
         return False
     return True
 
+
 def getPlaceInfoDetails(driver: webdriver, geoLocal: Nominatim, name: str):
     pl = Payload()
     data = pl.placeInfo

@@ -2,6 +2,7 @@ from typing import Optional
 from fastapi import FastAPI
 from pydantic import BaseModel
 
+
 class PlaceInfoModel(BaseModel):
     placeName: str
     placeType: str
@@ -20,6 +21,7 @@ class PlaceInfoModel(BaseModel):
     blogReviewNum: Optional[int]
     like: Optional[dict]
 
+
 class ReviewInfoModel(BaseModel):
     userHash: str
     reviewUserID: str
@@ -29,6 +31,15 @@ class ReviewInfoModel(BaseModel):
     reviewInfoScore: Optional[str]
     reviewInfoVisitDay: Optional[str]
     reviewInfoVisitCount: Optional[int]
+
+
+class UserInfoModel(BaseModel):
+    userHash: str
+    userID: str
+    reviewNum: int
+    photo: int
+    folloing: int
+    follower: int
 
 
 app = FastAPI()

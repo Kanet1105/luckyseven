@@ -28,8 +28,7 @@ def getReview(driver:webdriver):
     placeList = loadList('./data/name_list_all.pkl')
     for name, address in placeList:
         placeName = name + " " + address
-        if name == '7%칠백식당 신논현직영점': continue
-        result = getReviewInfo(driver, placeName, name, address)
+        # result = getReviewInfo(driver, placeName, name, address)
 
 
 # 장소 정보
