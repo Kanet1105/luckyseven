@@ -1,6 +1,5 @@
-# common
 from common.util import *
-from common.network import *
+from selenium.webdriver.chrome.service import Service
 
 # Driver load & get place list
 def loadDriver(driver_path: str):
@@ -44,15 +43,13 @@ def getPlaceInfo(driver:webdriver) :
         result = getPlaceInfoDetails(driver, geoLocal, placeName)
         if not result:
             noPlace.append(name)
-        else:
-            sendData('placeInfo', result)
 
     constructPickle('./data/no_place', noPlace)
 
 
 if __name__ == '__main__':
     driver = loadDriver('chromedriver_win32/chromedriver.exe')
-    #getPlaceInfo(driver)
+    getPlaceInfo(driver)
     #getPlaceName(driver)
     # getReview(driver)
 

@@ -1,21 +1,17 @@
 import pickle
 import json
-import re
-
+import time
+import traceback
 from selenium import webdriver
 from selenium.webdriver import ActionChains
-from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-
-import time
-import traceback
-
 from geopy.geocoders import Nominatim
 
 from common.config import *
 from common.network import *
+
 
 # element 여러개 반환
 def getElements(driver: webdriver, timeout: int, kind: By, value: str) -> list:
@@ -70,7 +66,7 @@ def scrollDown(driver: webdriver):
 
 
 # 검색어 입력    
-def search(driver: webdriver, keyword: str) :
+def search(driver: webdriver, keyword: str):
     search_path = XPath.searchPathKakao
     search_box = getElements(driver, 0.5, By.XPATH, search_path)
     actions = ActionChains(driver).send_keys_to_element(search_box[0], keyword).send_keys(Keys.ENTER)
@@ -102,7 +98,7 @@ def constructPickle(fileName: str, data):
 # subway 맛집 검색
 def getSuburl(driver: webdriver, sub):
     driver.get(URL.basePath)
-    click(driver, 1, By.XPATH , XPath.sheild)
+    click(driver, 1, By.XPATH, XPath.sheild)
     time.sleep(1)
     search(driver, sub + "역 맛집")  # 검색어 입력
     click(driver, 1, By.XPATH, XPath.more)  ##  장소더보기 클릭 (모든 페이지 접근 위해)
@@ -114,8 +110,8 @@ def getPageList(driver: webdriver, no):
     time.sleep(1)
     click(driver, 1, By.XPATH, XPath.pageNo.format(no), )  # 페이지 클릭
     time.sleep(1)
-    name = getElements(driver, 1, By.CLASS_NAME, ClassName.place_kakao) # 페이지 내 모든 음식점 리스트 반환
-    address = getElements(driver, 1, By.CLASS_NAME, ClassName.addr_kakao) # 페이지 내 모든 음식점 주소 반환
+    name = getElements(driver, 1, By.CLASS_NAME, ClassName.place_kakao)  # 페이지 내 모든 음식점 리스트 반환
+    address = getElements(driver, 1, By.CLASS_NAME, ClassName.addr_kakao)  # 페이지 내 모든 음식점 주소 반환
     for i in range(len(name)):
         if name[i].text not in nameList:
             nameList.append((name[i].text, " ".join(address[i].text.split()[:4])))
@@ -140,6 +136,39 @@ def getNamelist(driver: webdriver, sub_list):
         return all_list
 
 
+# div num 확인하기
+def countDivNum(driver: webdriver):
+    divNum = 1
+    if getElements(driver, 5, By.CLASS_NAME, ClassName.zeroClass):
+        divNum += 1
+    if getElements(driver, 5, By.CLASS_NAME, ClassName.announcementClass):
+        divNum += 1
+    return divNum
+
+
+# 영업 시간 더보기 버튼 클릭
+def clickTimeMoreButton(driver: webdriver):
+    if not click(driver, 5, By.XPATH, XPath.timeMoreButton.format(divNum=divNum, idx=index)):
+        if not click(driver, 5, By.XPATH, XPath.timeMoreButton2.format(divNum=divNum, idx=index)):
+            click(driver, 5, By.XPATH, XPath.timeMoreButton3.format(divNum=divNum, idx=index))
+
+
+# 메뉴 정보 받아오기
+def getMenuInfo(driver):
+    while getElements(driver, 5, By.CLASS_NAME, ClassName.menuClass):
+        click(driver, 5, By.XPATH, XPath.menuMoreButton)
+    if getElements(driver, 5, By.CLASS_NAME, ClassName.deliveryClass):
+        menuList = getElements(driver, 5, By.CLASS_NAME, ClassName.deliveryMenuNameClass)
+        menuPrice = getElements(driver, 5, By.CLASS_NAME, ClassName.deliveryMenuPriceClass)
+    elif getElements(driver, 5, By.CLASS_NAME, ClassName.takeOutMenuNameClass):
+        menuList = getElements(driver, 5, By.CLASS_NAME, ClassName.takeOutMenuNameClass)
+        menuPrice = getElements(driver, 5, By.CLASS_NAME, ClassName.deliveryMenuPriceClass)
+    else:
+        menuList = getElements(driver, 5, By.CLASS_NAME, ClassName.menuListClass)
+        menuPrice = getElements(driver, 5, By.CLASS_NAME, ClassName.menuPriceClass)
+    return menuList, menuPrice
+
+
 # 리뷰 탭 클릭하기
 def clickTab(driver: webdriver, name: str):
     tabElements = getElements(driver, 5, By.CLASS_NAME, ClassName.reviewTabClass)
@@ -150,6 +179,7 @@ def clickTab(driver: webdriver, name: str):
             return True
 
     return False
+
 
 # 리뷰 최신 순으로 정렬하기 버튼
 def clickRecent(driver: webdriver):
@@ -166,25 +196,23 @@ def getHashValue(driver: webdriver, timeout: int, kind: By, value1: str, value2:
     userInfo = dict()
     try:
         # url-> hash value 추출
-        element1 = WebDriverWait(driver, timeout).until(
-            EC.visibility_of_element_located((kind, value1))
-        )
+        element1 = WebDriverWait(driver, timeout).until(EC.visibility_of_element_located((kind, value1)))
         userInfo['userHash'] = element1.get_attribute('href').split('/')[-2]
-        userInfo['리뷰'] = 0
-        userInfo['사진'] = 0
-        userInfo['팔로잉'] = 0
-        userInfo['팔로워'] = 0
+        userInfo['review'] = 0
+        userInfo['photo'] = 0
+        userInfo['following'] = 0
+        userInfo['follower'] = 0
         # 포함된 user의 정보 가져오기
         element2 = getElements(element1, timeout, kind, value2)
         if element2 != None:
             for i in element2:
                 info = i.text.split(' ')
-                userInfo[info[0]] = int(info[1]) # ex. userInfo['리뷰'] = 1244
+                userInfo[info[0]] = int(info[1])  # ex. userInfo['리뷰'] = 1244
 
         return userInfo
-
     except:
         return None
+
 
 def getReviewSubInfo(driver: webdriver, timeout: int, kind: By, value1: str, value2: str):
     reviewInfo = dict()
@@ -192,11 +220,8 @@ def getReviewSubInfo(driver: webdriver, timeout: int, kind: By, value1: str, val
     reviewInfo['visitCount'] = 0
     reviewInfo['score'] = None
     try:
-        element1 = WebDriverWait(driver, timeout).until(
-            EC.visibility_of_element_located((kind, value1))
-        )
-
-        element2 = getElements(element1, timeout, kind, value2)
+        element1 = getElements(driver, timeout, kind, value1)[0] #WebDriverWait(driver, timeout).until(EC.visibility_of_element_located((kind, value1)))
+        element2 = getElements(element1, timeout, kind, value2)  ###############
 
         if element2:
             for i in element2:
@@ -215,91 +240,68 @@ def getReviewSubInfo(driver: webdriver, timeout: int, kind: By, value1: str, val
         return None
 
 
-def getReviewInfo(driver: webdriver, placeName: str, address:str):
+def getReviewInfo(driver: webdriver, placeName: str, address: str, prevNum: int):
     # print(placeName) # 디버깅 위한 출력
-
-    # search the place
-    driver.get(URL.baseURL.format(placeName = placeName))
-
-    # switch to the search iframe
-    switchToFrame(driver, 5, By.XPATH, XPath.searchIframe)
-
-    # click the first fetched item, 홈 화면으로 이동
-    click(driver, 5, By.XPATH, XPath.firstFetched)
-
-    # switch to the entry iframe
-    driver.switch_to.parent_frame()
-    if not switchToFrame(driver, 5, By.XPATH, XPath.entryIframe):
-        print("There is no {} place".format(placeName))
-        return None
-
-    # click review tab
-    clickTab(driver, '리뷰')
-
     # 최신순 버튼 클릭
     clickRecent(driver)
 
-    while True:
-        if click(driver, 2, By.CLASS_NAME, ClassName.reviewMoreButtonClass) == False:
+    finish = False
+    while True :
+        # 현재 페이지 리뷰 element들 가져오기
+        scrollDown(driver)
+        reviewElements = getElements(driver, 10, By.CLASS_NAME, ClassName.reviewClass)
+        if reviewElements:
+            # 각 리뷰에서 정보 가져오기
+            for i in range(prevNum, len(reviewElements)):
+                pl = Payload()
+                reviewData = pl.reviewInfo
+                userData = pl.userInfo
+                click(reviewElements[i], 5, By.CLASS_NAME, ClassName.reviewMoreContentButtonClass)
+
+                # 리뷰 유저의 ID -> str
+                reviewUserId = getValue(reviewElements[i], 5, By.CLASS_NAME, ClassName.reviewUserId)
+                if reviewUserId == None:
+                    continue
+
+                # 리뷰 유저에 대한 정보 -> dict
+                reviewUserHash = getHashValue(reviewElements[i], 1, By.CLASS_NAME, ClassName.reviewUserHash1,ClassName.reviewUserHash2)
+                # 리뷰 내용 -> str
+                reviewContent = getValue(reviewElements[i], 1, By.CLASS_NAME, ClassName.reviewContent)
+                # review 별점, 방문날짜, 방문 횟수 - dict
+                reviewInfo = getReviewSubInfo(reviewElements[i], 1, By.CLASS_NAME, ClassName.reviewInfo1, ClassName.reviewInfo2)
+
+                # 올해 리뷰가 아니면 break
+                if reviewInfo:
+                    if len(reviewInfo['visitDay'].split('.')) != 3:
+                        finish = True
+                        break
+
+                # 중복 상관없이 유저 정보 저장
+                userData['userHash'] = reviewUserHash['userHash']
+                userData['userID'] = reviewUserId
+                userData['userInfoReviewCount'] = reviewUserHash['review']
+                userData['userInfoPictureCount'] = reviewUserHash['photo']
+                userData['userInfoFollowingCount'] = reviewUserHash['following']
+                userData['userInfoFollowerCount'] = reviewUserHash['follower']
+
+                reviewData['userHash'] = reviewUserHash['userHash']
+                reviewData['reviewUserID'] = reviewUserId
+                reviewData['placeName'] = placeName
+                reviewData['placeAddress'] = address
+                reviewData['reviewContent'] = reviewContent
+                reviewData['reviewInfoScore'] = reviewInfo['score']
+                reviewData['reviewInfoVisitDay'] = reviewInfo['visitDay']
+                reviewData['reviewInfoVisitCount'] = reviewInfo['visitCount']
+
+                print(userData)
+                print(reviewData)
+                # print(reviewData) # 디버깅을 위한 출력
+                # 논의 사항
+                # sendData('reviewInfo', reviewData)
+                # sendData('userInfo', userData)
+        prevNum = len(reviewElements)
+        if finish or not click(driver, 2, By.CLASS_NAME, ClassName.reviewMoreButtonClass):
             break
-
-    # 현재 페이지 리뷰 element들 가져오기
-    reviewElements = getElements(driver, 10, By.CLASS_NAME, ClassName.reviewClass)
-
-    if reviewElements:
-
-        # 각 리뷰에서 정보 가져오기
-        for i in range(len(reviewElements)):
-            pl = Payload()
-            reviewData = pl.reviewInfo
-            userData = pl.userInfo
-
-            click(reviewElements[i], 1, By.CLASS_NAME, ClassName.reviewMoreContentButtonClass)
-
-            # 리뷰 유저의 ID -> str
-            reviewUserId = getValue(reviewElements[i], 1, By.CLASS_NAME, ClassName.reviewUserId)
-
-            if reviewUserId == None:
-                continue
-
-            # 리뷰 유저에 대한 정보 -> dict
-            reviewUserHash = getHashValue(reviewElements[i], 1, By.CLASS_NAME, ClassName.reviewUserHash1,
-                                          ClassName.reviewUserHash2)
-            # 리뷰 내용 -> str
-            reviewContent = getValue(reviewElements[i], 1, By.CLASS_NAME, ClassName.reviewContent)
-
-            # review 별점, 방문날짜, 방문 횟수 - dict
-            reviewInfo = getReviewSubInfo(reviewElements[i], 1, By.CLASS_NAME, ClassName.reviewInfo1,
-                                       ClassName.reviewInfo2)
-
-            # 올해 리뷰가 아니면 break
-            if reviewInfo:
-                if len(reviewInfo['visitDay'].split('.')) != 3:
-                    break
-
-            # 중복 상관없이 유저 정보 저장
-            userData['userHash'] = reviewUserHash['userHash']
-            userData['userID'] = reviewUserId
-            userData['userInfoReviewCount'] = reviewUserHash['리뷰']
-            userData['userInfoPictureCount'] = reviewUserHash['사진']
-            userData['userInfoFollowingCount'] = reviewUserHash['팔로잉']
-            userData['userInfoFollowerCount'] = reviewUserHash['팔로워']
-
-            reviewData['userHash'] = reviewUserHash['userHash']
-            reviewData['reviewUserID'] = reviewUserId
-            reviewData['placeName'] = placeName
-            reviewData['placeAddress'] = address
-            reviewData['reviewContent'] = reviewContent
-            reviewData['reviewInfoScore'] = reviewInfo['score']
-            reviewData['reviewInfoVisitDay'] = reviewInfo['visitDay']
-            reviewData['reviewInfoVisitCount'] = reviewInfo['visitCount']
-
-
-            # print(reviewData) # 디버깅을 위한 출력
-            # 논의 사항
-            # sendData('reviewInfo', reviewData)
-            # sendData('userInfo', userData)
-
 
 
 def getPlaceInfoDetails(driver: webdriver, geoLocal: Nominatim, name: str):
@@ -338,7 +340,6 @@ def getPlaceInfoDetails(driver: webdriver, geoLocal: Nominatim, name: str):
     if visitReviewNum:
         data['visitReviewNum'] = int(visitReviewNum.replace(',', ''))
         num += 1
-
     blogReviewNum = getValue(driver, 5, By.XPATH, XPath.reviewNum.format(num=num))
     if blogReviewNum:
         data['blogReviewNum'] = int(blogReviewNum.replace(',', ''))
@@ -353,11 +354,7 @@ def getPlaceInfoDetails(driver: webdriver, geoLocal: Nominatim, name: str):
         latitude, longitude = geocoding(geoLocal, placeAddress)
         data['latitude'], data['longitude'] = latitude, longitude
 
-    divNum = 1
-    if getElements(driver, 5, By.CLASS_NAME, ClassName.zeroClass):
-        divNum += 1
-    if getElements(driver, 5, By.CLASS_NAME, ClassName.announcementClass):
-        divNum += 1
+    divNum = countDivNum(driver)
 
     informationList = getElements(driver, 5, By.CSS_SELECTOR, Selector.informationSelector.format(num=5))
     for index, information in enumerate(informationList, start=1):
@@ -387,7 +384,6 @@ def getPlaceInfoDetails(driver: webdriver, geoLocal: Nominatim, name: str):
                 data['description'] = ' '.join(description[-1].text.split('내용 더보기')[0].split('\n'))
 
     scrollDown(driver)
-
     # get theme keyword
     if getElements(driver, 5, By.CLASS_NAME, ClassName.themeKeywordClass):
         themeData = getElements(driver, 5, By.CLASS_NAME, ClassName.themeDataClass)
@@ -398,12 +394,8 @@ def getPlaceInfoDetails(driver: webdriver, geoLocal: Nominatim, name: str):
     tabList = getElements(driver, 5, By.XPATH, XPath.placeTab)
     if tabList:
         tabList = tabList[0].text.replace('\n', ' ').split(' ')
-        if '메뉴' in tabList:
-            divNum += 2
-        else:
-            divNum += 1
-    else:
-        tabList = []
+        if '메뉴' in tabList: divNum += 2
+        else: divNum += 1
 
     click(driver, 5, By.XPATH, XPath.datalabMoreButton.format(divNum=divNum))
     if getElements(driver, 5, By.CLASS_NAME, ClassName.popularityClass):
@@ -416,38 +408,24 @@ def getPlaceInfoDetails(driver: webdriver, geoLocal: Nominatim, name: str):
             data['genderPopularity']['F'] = int(genderPopularity[0].split('%')[0])
             data['genderPopularity']['M'] = int(genderPopularity[1].split('%')[0])
 
-    for idx, tab in enumerate(tabList, start=1):
-        if tab == '메뉴' and not data['menu']:
-            if not click(driver, 5, By.XPATH, XPath.menuTabPath.format(num=idx)):
-                click(driver, 5, By.XPATH, XPath.menuTab2Path.format(num=idx))
-            while getElements(driver, 5, By.CLASS_NAME, ClassName.menuClass):
-                click(driver, 5, By.XPATH, XPath.menuMoreButton)
-            if getElements(driver, 5, By.CLASS_NAME, ClassName.deliveryClass):
-                menuList = getElements(driver, 5, By.CLASS_NAME, ClassName.deliveryMenuNameClass)
-                menuPrice = getElements(driver, 5, By.CLASS_NAME, ClassName.deliveryMenuPriceClass)
-            elif getElements(driver, 5, By.CLASS_NAME, ClassName.takeOutMenuNameClass):
-                menuList = getElements(driver, 5, By.CLASS_NAME, ClassName.takeOutMenuNameClass)
-                menuPrice = getElements(driver, 5, By.CLASS_NAME, ClassName.deliveryMenuPriceClass)
-            else:
-                menuList = getElements(driver, 5, By.CLASS_NAME, ClassName.menuListClass)
-                menuPrice = getElements(driver, 5, By.CLASS_NAME, ClassName.menuPriceClass)
-            if not menuList:
-                continue
+    if clickTab(driver, '메뉴'):
+        menuList, menuPrice = getMenuInfo(driver)
+        if menuList :
             for menu_idx in range(len(menuList) - 1):
                 data['menu'][menuList[menu_idx].text] = menuPrice[menu_idx].text
-        if tab == '리뷰':
-            # get Like
-            if not click(driver, 5, By.XPATH, XPath.menuTabPath.format(num=idx)):
-                if not click(driver, 5, By.XPATH, XPath.menuTab2Path.format(num=idx)):
-                    click(driver, 5, By.XPATH, XPath.menuTab3Path.format(num=idx))
-            while click(driver, 5, By.CLASS_NAME, ClassName.likeMoreClass):
-                if getValue(driver, 5, By.CLASS_NAME, ClassName.likeMoreClass) != "더보기":
-                    break
-            time.sleep(0.5)
-            likeTopic = getElements(driver, 5, By.CLASS_NAME, ClassName.likeTopicClass)
-            if likeTopic:
-                likeNum = getElements(driver, 5, By.CLASS_NAME, ClassName.likeNumClass)[1:]
-                for idx in range(len(likeNum)):
-                    data['like'][likeTopic[idx].text] = int(likeNum[idx].text.split('\n')[-1])
+    if clickTab(driver, '리뷰'):  # get Like
+        while click(driver, 5, By.CLASS_NAME, ClassName.likeMoreClass):
+            if getValue(driver, 5, By.CLASS_NAME, ClassName.likeMoreClass) != "더보기": break
+
+        time.sleep(0.5)
+        likeTopic = getElements(driver, 5, By.CLASS_NAME, ClassName.likeTopicClass)
+        if likeTopic:
+            likeNum = getElements(driver, 5, By.CLASS_NAME, ClassName.likeNumClass)[1:]
+            for idx in range(len(likeNum)):
+                data['like'][likeTopic[idx].text] = int(likeNum[idx].text.split('\n')[-1])
+
+    sendData('placeInfo', data)
+    print(data)
+    getReviewInfo(driver, data['placeName'], data['placeAddress'], len(data['like']))
+
     driver.switch_to.parent_frame()
-    return data
