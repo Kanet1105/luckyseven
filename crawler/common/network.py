@@ -22,9 +22,33 @@ class Payload:
         'like': dict(),
     }
 
+    reviewInfo = {
+        'userHash': None,
+        'reviewUserID': None,
+        'placeName': None,
+        'placeAddress': None,
+        'reviewContent': None,
+        'reviewInfoScore': None,
+        'reviewInfoVisitDay': None,
+        'reviewInfoVisitCount': None,
+    }
+
+    userInfo = {
+        'userHash': None,
+        'userID': None,
+        'reviewNum': None,
+        'photo': None,
+        'folloing': None,
+        'follower': None,
+    }
+
+    placeNameInfo = {
+        'placeName': None,
+        'placeAddress': None
+    }
+
 def sendData(kind: str, data: dict):
     # requests.post 로 데이터 전송
-    if kind == "placeInfo":
-        result = requests.post(url=HOST, json=data)
-        print(result)
-    pass
+    headers = {'kind' : kind}
+    result = requests.post(url=HOST, json=data, headers=headers)
+    print(result)
