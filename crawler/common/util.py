@@ -293,8 +293,6 @@ def getReviewInfo(driver: webdriver, placeName: str, address: str, prevNum: int)
                 reviewData['reviewInfoVisitDay'] = reviewInfo['visitDay']
                 reviewData['reviewInfoVisitCount'] = reviewInfo['visitCount']
 
-                print(userData)
-                print(reviewData)
                 # print(reviewData) # 디버깅을 위한 출력
                 sendData("ReviewInfoModel", reviewData)
                 sendData("UserInfoModel", userData)
