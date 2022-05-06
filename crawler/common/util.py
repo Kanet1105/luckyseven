@@ -20,7 +20,7 @@ def getElements(driver: webdriver, timeout: int, kind: By, value: str) -> list:
         )
         return elements
     except:
-        return None
+        return []
 
 
 # element 값 하나 반환
@@ -31,7 +31,7 @@ def getValue(driver: webdriver, timeout: int, kind: By, value: str) -> str:
         )
         return element.text
     except:
-        return None
+        return ""
 
 
 # iframe 전환
@@ -76,7 +76,7 @@ def geocoding(geoLocal: Nominatim, address: str) -> (float, float):
     address = " ".join(address.split(' ')[:4])
     try:
         geo = geoLocal.geocode(address)
-        return geo.latitude, geo.longitude
+        return (geo.latitude, geo.longitude)
     except:
         return None, None
 
@@ -183,7 +183,7 @@ def clickTab(driver: webdriver, name: str):
 def clickRecent(driver: webdriver):
     listButton = getElements(driver, 5, By.CLASS_NAME, ClassName.recentClass)
 
-    if listButton != None:
+    if listButton:
         for i in listButton:
             if i.text == '최신순':
                 i.click()
@@ -202,17 +202,17 @@ def getHashValue(driver: webdriver, timeout: int, kind: By, value1: str, value2:
         userInfo['follower'] = 0
         # 포함된 user의 정보 가져오기
         element2 = getElements(element1, timeout, kind, value2)
-        if element2 != None:
+        if element2:
             for i in element2:
                 info = i.text.split(' ')
                 userInfo[info[0]] = int(info[1])  # ex. userInfo['리뷰'] = 1244
 
         return userInfo
     except:
-        return None
+        return dict()
 
 
-def getReviewSubInfo(driver: webdriver, timeout: int, kind: By, value1: str, value2: str):
+def getReviewSubInfo(driver: webdriver, timeout: int, kind: By, value1: str, value2: str) -> dict:
     reviewInfo = dict()
     reviewInfo['visitDay'] = None
     reviewInfo['visitCount'] = 0
@@ -235,7 +235,7 @@ def getReviewSubInfo(driver: webdriver, timeout: int, kind: By, value1: str, val
                     reviewInfo['score'] = i.text.split('\n')[1]
         return reviewInfo
     except:
-        return None
+        return dict()
 
 
 def getReviewInfo(driver: webdriver, placeName: str, address: str, prevNum: int):
@@ -258,7 +258,7 @@ def getReviewInfo(driver: webdriver, placeName: str, address: str, prevNum: int)
 
                 # 리뷰 유저의 ID -> str
                 reviewUserId = getValue(reviewElements[i], 5, By.CLASS_NAME, ClassName.reviewUserId)
-                if reviewUserId == None:
+                if not reviewUserId:
                     continue
 
                 # 리뷰 유저에 대한 정보 -> dict
@@ -299,7 +299,7 @@ def getReviewInfo(driver: webdriver, placeName: str, address: str, prevNum: int)
             break
 
 
-def loadPlacePage(driver: webdriver):
+def loadPlacePage(driver: webdriver) -> bool:
     # switch to the search iframe
     switchToFrame(driver, 5, By.XPATH, XPath.searchIframe)
 
@@ -313,7 +313,7 @@ def loadPlacePage(driver: webdriver):
     return True
 
 
-def getPlaceInfoDetails(driver: webdriver, geoLocal: Nominatim, name: str):
+def getPlaceInfoDetails(driver: webdriver, geoLocal: Nominatim, name: str) -> bool:
     pl = Payload()
     data = pl.placeInfo
 
@@ -422,9 +422,10 @@ def getPlaceInfoDetails(driver: webdriver, geoLocal: Nominatim, name: str):
             if getValue(driver, 5, By.CLASS_NAME, ClassName.likeMoreClass) != "더보기": break
 
         time.sleep(0.5)
-        likeTopic = getElements(driver, 5, By.CLASS_NAME, ClassName.likeTopicClass)
-        if likeTopic:
-            likeNum = getElements(driver, 5, By.CLASS_NAME, ClassName.likeNumClass)[1:]
+        likeNum = getElements(driver, 5, By.CLASS_NAME, ClassName.likeNumClass)
+        if likeNum:
+            likeNum = likeNum[1:]
+            likeTopic = getElements(driver, 5, By.CLASS_NAME, ClassName.likeTopicClass)
             for idx in range(len(likeNum)):
                 data['like'][likeTopic[idx].text] = int(likeNum[idx].text.split('\n')[-1])
 
@@ -433,3 +434,4 @@ def getPlaceInfoDetails(driver: webdriver, geoLocal: Nominatim, name: str):
     getReviewInfo(driver, data['placeName'], data['placeAddress'], len(data['like']))
 
     driver.switch_to.parent_frame()
+    return True

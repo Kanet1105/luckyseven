@@ -35,7 +35,7 @@ def getReview(driver:webdriver):
 # 장소 정보
 def getPlaceInfo(driver:webdriver):
     geoLocal = Nominatim(user_agent='South Korea')
-    placeList = loadList('name_list_all.pkl')
+    placeList = loadList('./data/name_list_all.pkl')
     noPlace = []
     for name, address in placeList:
         placeName = name + " " + address
@@ -47,7 +47,7 @@ def getPlaceInfo(driver:webdriver):
 
 
 if __name__ == '__main__':
-    driver = loadDriver('D:\\PythonProjects\\L7D\\chromedriver_win32\\chromedriver.exe')
+    driver = loadDriver('./chromedriver_win32/chromedriver.exe')
     getPlaceInfo(driver)
     #getPlaceName(driver)
     # getReview(driver)
