@@ -7,6 +7,8 @@ from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.keys import Keys
+
 from geopy.geocoders import Nominatim
 from .config import *
 from .network import *
@@ -78,7 +80,7 @@ def geocoding(geoLocal: Nominatim, address: str) -> (float, float):
         geo = geoLocal.geocode(address)
         return (geo.latitude, geo.longitude)
     except:
-        return None, None
+        return 0.0, 0.0
 
 
 # json 파일 생성
@@ -195,21 +197,29 @@ def getHashValue(driver: webdriver, timeout: int, kind: By, value1: str, value2:
     try:
         # url-> hash value 추출
         element1 = WebDriverWait(driver, timeout).until(EC.visibility_of_element_located((kind, value1)))
-        userInfo['userHash'] = element1.get_attribute('href').split('/')[-2]
+        userInfo['userHash'] = ''
         userInfo['review'] = 0
         userInfo['photo'] = 0
         userInfo['following'] = 0
         userInfo['follower'] = 0
+        userInfo['userHash'] = element1.get_attribute('href').split('/')[-2]
         # 포함된 user의 정보 가져오기
         element2 = getElements(element1, timeout, kind, value2)
         if element2:
             for i in element2:
                 info = i.text.split(' ')
-                userInfo[info[0]] = int(info[1])  # ex. userInfo['리뷰'] = 1244
-
+                # 한글 영어 매칭
+                if info[0] == '리뷰':
+                    userInfo['review'] = int(info[1])  # ex. userInfo['리뷰'] = 1244
+                elif info[0] == '사진':
+                    userInfo['photo'] = int(info[1])
+                elif info[0] == '팔로잉':
+                    userInfo['following'] = int(info[1])
+                elif info[0] == '팔로워':
+                    userInfo['follower'] = int(info[1])
         return userInfo
     except:
-        return dict()
+        return userInfo
 
 
 def getReviewSubInfo(driver: webdriver, timeout: int, kind: By, value1: str, value2: str) -> dict:
@@ -235,7 +245,7 @@ def getReviewSubInfo(driver: webdriver, timeout: int, kind: By, value1: str, val
                     reviewInfo['score'] = i.text.split('\n')[1]
         return reviewInfo
     except:
-        return dict()
+        return reviewInfo
 
 
 def getReviewInfo(driver: webdriver, placeName: str, address: str, prevNum: int):
@@ -427,8 +437,10 @@ def getPlaceInfoDetails(driver: webdriver, geoLocal: Nominatim, name: str) -> bo
             likeNum = likeNum[1:]
             likeTopic = getElements(driver, 5, By.CLASS_NAME, ClassName.likeTopicClass)
             for idx in range(len(likeNum)):
-                data['like'][likeTopic[idx].text] = int(likeNum[idx].text.split('\n')[-1])
-
+                try:
+                    data['like'][likeTopic[idx].text] = int(likeNum[idx].text.split('\n')[-1])
+                except:
+                    data['like'][likeTopic[idx].text] = 0
     sendData("PlaceInfoModel", data)
     print(data)
     getReviewInfo(driver, data['placeName'], data['placeAddress'], len(data['like']))
