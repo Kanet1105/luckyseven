@@ -35,7 +35,7 @@ def getReview(driver:webdriver):
 # 장소 정보
 def getPlaceInfo(driver:webdriver):
     geoLocal = Nominatim(user_agent='South Korea')
-    placeList = loadList('./data/name_list_all.pkl')
+    placeList = loadList('./data/name_list_final.pkl')
     noPlace = []
     for name, address in placeList:
         placeName = name + " " + address
