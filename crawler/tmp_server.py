@@ -1,8 +1,9 @@
 from fastapi import FastAPI
 from pymongo import MongoClient
+from pymongo import errors
+import traceback
 import pymongo
 import schema
-
 
 
 app = FastAPI()
@@ -15,8 +16,9 @@ def makeIdx(collection, idxnames):
             collection.create_index(idxnames, unique=True)
         else:
             collection.create_index([(idxname, pymongo.ASCENDING) for idxname in idxnames], unique=True)
-    except:
-        print("Index already exist")
+    except Exception as idxError:
+        print(traceback.format_exc())
+
 
 
 # DB생성
@@ -28,9 +30,8 @@ def makeDB(dbname, collection):
         for cname, idxname in collection.items():
             globals()[cname] = db[cname]
             makeIdx(globals()[cname], idxname)
-    except:
-        print("DB already exist")
-
+    except Exception as dbError:
+        print(traceback.format_exc())
     return db
 
 
@@ -54,7 +55,6 @@ collectionList = {'placeInfo': ('placeName', 'placeAddress'),
 # DB생성
 db = makeDB('test2', collectionList)
 
-
 @app.post('/PlaceInfoModel')
 async def receivePlaceInfo(data: schema.PlaceInfoModel):
     print("*" *20 , "장소정보 저장", "*"*20)
@@ -65,30 +65,45 @@ async def receivePlaceInfo(data: schema.PlaceInfoModel):
         result = db['placeInfo'].insert_one(data)
         debugPrint(result, mode='insert')
 
-    except:
+    except errors.DuplicateKeyError:
         print("place 정보 이미 있습니다")
-        alreadyData = db['placeInfo'].find_one({'placeName': data['placeName'], 'placeAddress': data['placeAddress']})
-        debugPrint(alreadyData, mode='exist')
+        pass
+    except Exception as placeError:
+        print(traceback.format_exc())
+        pass
+
+    # except  :
+    #     print("place 정보 이미 있습니다")
+    #     alreadyData = db['placeInfo'].find_one({'placeName': data['placeName'], 'placeAddress': data['placeAddress']})
+    #     debugPrint(alreadyData, mode='exist')
 
 
 @app.post('/ReviewInfoModel')
 async def receiveReviewInfo(data: schema.ReviewInfoModel):
     data = dict(data)
     debugPrint(data, mode='first')
+
     try:
         print("*" * 20, "리뷰정보 저장", "*" * 20)
         result = db['reviewInfo'].insert_one(data)
         debugPrint(result, mode='insert')
-    except:
+    except errors.DuplicateKeyError:
         print("review 정보 이미 있습니다")
-        alreadyData = db['reviewInfo'].find(
-            {'placeName': data['placeName'],
-             'placeAddress': data['placeAddress'],
-             'userHash': data['userHash'],
-             'reviewInfoVisitCount': data['reviewInfoVisitCount']
-             }
-        )
-        debugPrint(alreadyData, mode='exist')
+        pass
+    except Exception as reviewError:
+        print(traceback.format_exc())
+        pass
+
+    # except:
+    #     print("review 정보 이미 있습니다")
+    #     alreadyData = db['reviewInfo'].find(
+    #         {'placeName': data['placeName'],
+    #          'placeAddress': data['placeAddress'],
+    #          'userHash': data['userHash'],
+    #          'reviewInfoVisitCount': data['reviewInfoVisitCount']
+    #          }
+    #     )
+    #     debugPrint(alreadyData, mode='exist')
 
 
 @app.post('/UserInfoModel')
@@ -100,9 +115,15 @@ async def receiveUserInfo(data: schema.UserInfoModel):
     try:
         result = db['userInfo'].insert_one(data)
         debugPrint(result, mode='insert')
-
-    except:
+    except errors.DuplicateKeyError:
         print("user 정보 이미 있습니다")
-        alreadyData = db['userInfo'].find_one({'userHash': data['userHash']})
-        debugPrint(alreadyData, mode='exist')
+        pass
+    except Exception as userError:
+        print(traceback.format_exc())
+        pass
+
+    # except:
+    #     print("user 정보 이미 있습니다")
+    #     alreadyData = db['userInfo'].find_one({'userHash': data['userHash']})
+    #     debugPrint(alreadyData, mode='exist')
 
