@@ -197,11 +197,6 @@ def getHashValue(driver: webdriver, timeout: int, kind: By, value1: str, value2:
     try:
         # url-> hash value 추출
         element1 = WebDriverWait(driver, timeout).until(EC.visibility_of_element_located((kind, value1)))
-        userInfo['userHash'] = ''
-        userInfo['review'] = 0
-        userInfo['photo'] = 0
-        userInfo['following'] = 0
-        userInfo['follower'] = 0
         userInfo['userHash'] = element1.get_attribute('href').split('/')[-2]
         # 포함된 user의 정보 가져오기
         element2 = getElements(element1, timeout, kind, value2)
@@ -210,7 +205,7 @@ def getHashValue(driver: webdriver, timeout: int, kind: By, value1: str, value2:
                 info = i.text.split(' ')
                 # 한글 영어 매칭
                 if info[0] == '리뷰':
-                    userInfo['review'] = int(info[1])  # ex. userInfo['리뷰'] = 1244
+                    userInfo['reviewNum'] = int(info[1])  # ex. userInfo['리뷰'] = 1244
                 elif info[0] == '사진':
                     userInfo['photo'] = int(info[1])
                 elif info[0] == '팔로잉':
@@ -224,9 +219,7 @@ def getHashValue(driver: webdriver, timeout: int, kind: By, value1: str, value2:
 
 def getReviewSubInfo(driver: webdriver, timeout: int, kind: By, value1: str, value2: str) -> dict:
     reviewInfo = dict()
-    reviewInfo['visitDay'] = None
-    reviewInfo['visitCount'] = 0
-    reviewInfo['score'] = None
+
     try:
         element1 = getElements(driver, timeout, kind, value1)[0] #WebDriverWait(driver, timeout).until(EC.visibility_of_element_located((kind, value1)))
         element2 = getElements(element1, timeout, kind, value2)  ###############
@@ -234,15 +227,15 @@ def getReviewSubInfo(driver: webdriver, timeout: int, kind: By, value1: str, val
         if element2:
             for i in element2:
                 if '방문일' in i.text:
-                    reviewInfo['visitDay'] = i.text.split('\n')[1]
+                    reviewInfo['reviewInfoVisitDay'] = i.text.split('\n')[1]
                 if '번째' in i.text:
                     num = i.text.split('\n')[0].strip('번째 방문')
                     if num.isdigit():
-                        reviewInfo['visitCount'] = int(num)
+                        reviewInfo['reviewInfoVisitCount'] = int(num)
                     else:
-                        reviewInfo['visitCount'] = -1
+                        reviewInfo['reviewInfoVisitCount'] = -1
                 if '별점' in i.text:
-                    reviewInfo['score'] = i.text.split('\n')[1]
+                    reviewInfo['reviewInfoScore'] = i.text.split('\n')[1]
         return reviewInfo
     except:
         return reviewInfo
@@ -280,26 +273,23 @@ def getReviewInfo(driver: webdriver, placeName: str, address: str, prevNum: int)
 
                 # 올해 리뷰가 아니면 break
                 if reviewInfo:
-                    if len(reviewInfo['visitDay'].split('.')) != 3:
+                    if len(reviewInfo['reviewInfoVisitDay'].split('.')) != 3:
                         finish = True
                         break
 
                 # 중복 상관없이 유저 정보 저장
-                userData['userHash'] = reviewUserHash['userHash']
                 userData['userID'] = reviewUserId
-                userData['reviewNum'] = reviewUserHash['review']
-                userData['photo'] = reviewUserHash['photo']
-                userData['following'] = reviewUserHash['following']
-                userData['follower'] = reviewUserHash['follower']
+                userData.update(reviewUserHash)
 
                 reviewData['userHash'] = reviewUserHash['userHash']
                 reviewData['reviewUserID'] = reviewUserId
                 reviewData['placeName'] = placeName
                 reviewData['placeAddress'] = address
                 reviewData['reviewContent'] = reviewContent
-                reviewData['reviewInfoScore'] = reviewInfo['score']
-                reviewData['reviewInfoVisitDay'] = reviewInfo['visitDay']
-                reviewData['reviewInfoVisitCount'] = reviewInfo['visitCount']
+                reviewData.update(reviewInfo)
+
+                print("user: ", userData)
+                print("review: ", reviewData)
 
                 # print(reviewData) # 디버깅을 위한 출력
                 sendData("ReviewInfoModel", reviewData)
