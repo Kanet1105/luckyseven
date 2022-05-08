@@ -128,5 +128,5 @@ class ClassName:
     reviewPoint2 = '_1fvo3'
     reviewInfo1 = '_3-LAD'
     reviewInfo2 = '_1fvo3'
-
-    recentClass = '_3WQBd'
+    recentClass1 = '_2OZXM'
+    recentClass2 = '_3WQBd'

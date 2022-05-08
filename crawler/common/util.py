@@ -8,11 +8,12 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
+from selenium.common import exceptions
 
 from geopy.geocoders import Nominatim
 from .config import *
 from .network import *
-
+from .exception import *
 
 # element 여러개 반환
 def getElements(driver: webdriver, timeout: int, kind: By, value: str) -> list:
@@ -21,9 +22,13 @@ def getElements(driver: webdriver, timeout: int, kind: By, value: str) -> list:
             EC.presence_of_all_elements_located((kind, value))
         )
         return elements
-    except:
+    except exceptions.TimeoutException:
+        # print('')
         return []
-
+    except Exception as error:
+        print("Unexpected Exception")
+        print(error)
+        return []
 
 # element 값 하나 반환
 def getValue(driver: webdriver, timeout: int, kind: By, value: str) -> str:
@@ -32,9 +37,13 @@ def getValue(driver: webdriver, timeout: int, kind: By, value: str) -> str:
             EC.visibility_of_element_located((kind, value))
         )
         return element.text
-    except:
+    except exceptions.TimeoutException:
         return ""
 
+    except Exception as error:
+        print("Unexpected Exception")
+        print(error)
+        return ""
 
 # iframe 전환
 def switchToFrame(driver: webdriver, timeout: int, kind: By, value: str) -> bool:
@@ -43,7 +52,12 @@ def switchToFrame(driver: webdriver, timeout: int, kind: By, value: str) -> bool
             EC.frame_to_be_available_and_switch_to_it((kind, value))
         )
         return ack
-    except:
+    except exceptions.TimeoutException:
+        return False
+
+    except Exception as error:
+        print("Unexpected Exception")
+        print(error)
         return False
 
 
@@ -55,22 +69,30 @@ def click(driver: webdriver, timeout: int, kind: By, value: str) -> bool:
         time.sleep(1)
         fetched.click()
         return True
-    except:
-        print(traceback.format_exc())
+    except exceptions.ElementClickInterceptedException:
         return False
-
+    except IndexError:
+        return False
 
 # scroll 끝까지 내리기
 def scrollDown(driver: webdriver):
-    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    try:
+        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    except Exception as scrollError:
+        print("scrollDown Error")
+        print(traceback.format_exc())
 
 
 # 검색어 입력
 def search(driver: webdriver, keyword: str):
-    search_path = XPath.searchPathKakao
-    search_box = getElements(driver, 0.5, By.XPATH, search_path)
-    actions = ActionChains(driver).send_keys_to_element(search_box[0], keyword).send_keys(Keys.ENTER)
-    actions.perform()
+    try:
+        search_path = XPath.searchPathKakao
+        search_box = getElements(driver, 0.5, By.XPATH, search_path)
+        actions = ActionChains(driver).send_keys_to_element(search_box[0], keyword).send_keys(Keys.ENTER)
+        actions.perform()
+    except Exception as searchError:
+        print("Search Error")
+        print(traceback.format_exc())
 
 
 # 도로명 주소 위도 경도 변환
@@ -79,7 +101,7 @@ def geocoding(geoLocal: Nominatim, address: str) -> (float, float):
     try:
         geo = geoLocal.geocode(address)
         return (geo.latitude, geo.longitude)
-    except:
+    except Exception as geoError:
         return 0.0, 0.0
 
 
@@ -113,27 +135,27 @@ def getPageList(driver: webdriver, no):
     name = getElements(driver, 1, By.CLASS_NAME, ClassName.place_kakao)  # 페이지 내 모든 음식점 리스트 반환
     address = getElements(driver, 1, By.CLASS_NAME, ClassName.addr_kakao)  # 페이지 내 모든 음식점 주소 반환
     for i in range(len(name)):
-        if name[i].text not in nameList:
-            nameList.append((name[i].text.replace('%', '%20'), " ".join(address[i].text.split()[:4])))
-            # print((name[i].text, " ".join(address[i].text.split()[:4])))  # 디버깅위해 출력
+        try:
+            if name[i].text not in nameList:
+                nameList.append((name[i].text.replace('%', '%20'), " ".join(address[i].text.split()[:4])))
+                # print((name[i].text, " ".join(address[i].text.split()[:4])))  # 디버깅위해 출력
+        except Exception as textError:
+            print(textError)
+
     return nameList
 
 
 # 지하철 목록에서 모든 음식점이름 반환
 def getNamelist(driver: webdriver, sub_list):
     all_list = []
-    try:
-        for sub in sub_list:
-            # print(sub) # 디버깅 위해 출력
-            getSuburl(driver, sub)
-            for _ in range(7):
-                for no in range(1, 6):
-                    all_list += getPageList(driver, no)
-                click(driver, 5, By.XPATH, XPath.nextPage)  # 다음페이지 클릭
-        return all_list
-    except:
-        print(traceback.format_exc())
-        return all_list
+    for sub in sub_list:
+        # print(sub) # 디버깅 위해 출력
+        getSuburl(driver, sub)
+        for _ in range(7):
+            for no in range(1, 6):
+                all_list += getPageList(driver, no)
+            click(driver, 5, By.XPATH, XPath.nextPage)  # 다음페이지 클릭
+    return list(set(all_list))
 
 
 # div num 확인하기
@@ -147,7 +169,7 @@ def countDivNum(driver: webdriver):
 
 
 # 영업 시간 더보기 버튼 클릭
-def clickTimeMoreButton(driver: webdriver):
+def clickTimeMoreButton(driver: webdriver, divNum: int, index: int):
     if not click(driver, 5, By.XPATH, XPath.timeMoreButton.format(divNum=divNum, idx=index)):
         if not click(driver, 5, By.XPATH, XPath.timeMoreButton2.format(divNum=divNum, idx=index)):
             click(driver, 5, By.XPATH, XPath.timeMoreButton3.format(divNum=divNum, idx=index))
@@ -183,12 +205,12 @@ def clickTab(driver: webdriver, name: str):
 
 # 리뷰 최신 순으로 정렬하기 버튼
 def clickRecent(driver: webdriver):
-    listButton = getElements(driver, 5, By.CLASS_NAME, ClassName.recentClass)
+    listButton = getElements(driver, 5, By.CLASS_NAME, ClassName.recentClass1)
 
     if listButton:
         for i in listButton:
             if i.text == '최신순':
-                i.click()
+                click(i, 5, By.CLASS_NAME, ClassName.recentClass2)
 
 
 # url 정보에서 user hash value 가져오기
@@ -196,25 +218,29 @@ def getHashValue(driver: webdriver, timeout: int, kind: By, value1: str, value2:
     userInfo = dict()
     try:
         # url-> hash value 추출
-        element1 = WebDriverWait(driver, timeout).until(EC.visibility_of_element_located((kind, value1)))
-        userInfo['userHash'] = element1.get_attribute('href').split('/')[-2]
-        # 포함된 user의 정보 가져오기
+        element1 = getElements(driver, timeout, kind, value1)
+        if element1:
+            element1 = element1[0]
+            userInfo['userHash'] = element1.get_attribute('href').split('/')[-2]
         element2 = getElements(element1, timeout, kind, value2)
+        # 포함된 user의 정보 가져오기
         if element2:
             for i in element2:
                 info = i.text.split(' ')
                 # 한글 영어 매칭
-                if info[0] == '리뷰':
+                if info[0] == '리뷰' and info[1].isdigit():
                     userInfo['reviewNum'] = int(info[1])  # ex. userInfo['리뷰'] = 1244
-                elif info[0] == '사진':
+                elif info[0] == '사진' and info[1].isdigit():
                     userInfo['photo'] = int(info[1])
-                elif info[0] == '팔로잉':
+                elif info[0] == '팔로잉' and info[1].isdigit():
                     userInfo['following'] = int(info[1])
-                elif info[0] == '팔로워':
+                elif info[0] == '팔로워' and info[1].isdigit():
                     userInfo['follower'] = int(info[1])
-        return userInfo
-    except:
-        return userInfo
+
+    except Exception as noUserInfo:
+        print(noUserInfo)
+
+    return userInfo
 
 
 def getReviewSubInfo(driver: webdriver, timeout: int, kind: By, value1: str, value2: str) -> dict:
@@ -236,9 +262,11 @@ def getReviewSubInfo(driver: webdriver, timeout: int, kind: By, value1: str, val
                         reviewInfo['reviewInfoVisitCount'] = -1
                 if '별점' in i.text:
                     reviewInfo['reviewInfoScore'] = i.text.split('\n')[1]
-        return reviewInfo
-    except:
-        return reviewInfo
+    except Exception as noreviewInfo:
+        print(noreviewInfo)
+
+
+    return reviewInfo
 
 
 def getReviewInfo(driver: webdriver, placeName: str, address: str, prevNum: int):
@@ -276,6 +304,9 @@ def getReviewInfo(driver: webdriver, placeName: str, address: str, prevNum: int)
                     if len(reviewInfo['reviewInfoVisitDay'].split('.')) != 3:
                         finish = True
                         break
+
+                if 'userHash' not in reviewUserHash.keys():
+                    continue
 
                 # 중복 상관없이 유저 정보 저장
                 userData['userID'] = reviewUserId
@@ -338,11 +369,11 @@ def getPlaceInfoDetails(driver: webdriver, geoLocal: Nominatim, name: str) -> bo
 
     # get number of reviews
     visitReviewNum = getValue(driver, 5, By.XPATH, XPath.reviewNum.format(num=num))
-    if visitReviewNum:
+    if visitReviewNum and visitReviewNum.replace(',', '').isdigit():
         data['visitReviewNum'] = int(visitReviewNum.replace(',', ''))
         num += 1
     blogReviewNum = getValue(driver, 5, By.XPATH, XPath.reviewNum.format(num=num))
-    if blogReviewNum:
+    if blogReviewNum and blogReviewNum.replace(',', '').isdigit():
         data['blogReviewNum'] = int(blogReviewNum.replace(',', ''))
 
     # get telephone
@@ -362,9 +393,7 @@ def getPlaceInfoDetails(driver: webdriver, geoLocal: Nominatim, name: str) -> bo
         infoText = information.text.split('\n')
         if infoText[0] == '영업시간':
             # more buttom click
-            if not click(driver, 5, By.XPATH, XPath.timeMoreButton.format(divNum=divNum, idx=index)):
-                if not click(driver, 5, By.XPATH, XPath.timeMoreButton2.format(divNum=divNum, idx=index)):
-                    click(driver, 5, By.XPATH, XPath.timeMoreButton3.format(divNum=divNum, idx=index))
+            clickTimeMoreButton(driver, divNum, index)
 
             dayList = getElements(driver, 5, By.CLASS_NAME, ClassName.dayClass)
             timeList = getElements(driver, 5, By.CLASS_NAME, ClassName.timeClass)
@@ -399,15 +428,32 @@ def getPlaceInfoDetails(driver: webdriver, geoLocal: Nominatim, name: str) -> bo
         else: divNum += 1
 
     click(driver, 5, By.XPATH, XPath.datalabMoreButton.format(divNum=divNum))
+    # if getElements(driver, 5, By.CLASS_NAME, ClassName.popularityClass):
+    #     for idx in range(10, 70, 10):
+    #         data['agePopularity'][f'{idx}대'] = float(
+    #             getValue(driver, 5, By.XPATH, XPath.agePopluarity.format(age=idx // 10)).replace('%', ''))
+    #     genderData = getElements(driver, 5, By.CLASS_NAME, ClassName.donutGraphClass)[0]
+    #     if genderData:
+    #         genderPopularity = genderData.text.split('\n')
+    #         data['genderPopularity']['F'] = int(genderPopularity[0].split('%')[0])
+    #         data['genderPopularity']['M'] = int(genderPopularity[1].split('%')[0])
+
     if getElements(driver, 5, By.CLASS_NAME, ClassName.popularityClass):
         for idx in range(10, 70, 10):
-            data['agePopularity'][f'{idx}대'] = float(
-                getValue(driver, 5, By.XPATH, XPath.agePopluarity.format(age=idx // 10)).replace('%', ''))
-        genderData = getElements(driver, 5, By.CLASS_NAME, ClassName.donutGraphClass)[0]
+            popularityValue = getValue(driver, 5, By.XPATH, XPath.agePopluarity.format(age=idx // 10))
+            if popularityValue:
+                popularityValue = popularityValue.replace('%', '')
+            if popularityValue.isdigit():
+                data['agePopularity'][f'{idx}대'] = float(popularityValue)
+        genderData = getElements(driver, 5, By.CLASS_NAME, ClassName.donutGraphClass)
         if genderData:
+            genderData = genderData[0]
             genderPopularity = genderData.text.split('\n')
-            data['genderPopularity']['F'] = int(genderPopularity[0].split('%')[0])
-            data['genderPopularity']['M'] = int(genderPopularity[1].split('%')[0])
+            femaleValue = genderPopularity[0].split('%')[0]
+            maleValue = genderPopularity[1].split('%')[0]
+            if femaleValue.isdigit() and maleValue.isdigit():
+                data['genderPopularity']['F'] = int(femaleValue)
+                data['genderPopularity']['M'] = int(maleValue)
 
     if clickTab(driver, '메뉴'):
         menuList, menuPrice = getMenuInfo(driver)
