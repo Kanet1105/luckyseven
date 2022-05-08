@@ -50,8 +50,19 @@ class Payload:
         }
 
 
+class ResendData:
+    def __init__(self):
+        self.PlaceInfoModel = []
+        self.ReviewInfoModel = []
+        self.UserInfoModel = []
+
+resend = ResendData()
+
 def sendData(kind: str, data: dict):
+    global resend
     # requests.post 로 데이터 전송
     result = requests.post(url=HOST.format(uri=kind), json=data)
+    if result.status_code != 200:
+        exec(f'resend.{kind}.append({data})')
     print(result)
 

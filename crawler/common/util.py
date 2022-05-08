@@ -147,7 +147,7 @@ def countDivNum(driver: webdriver):
 
 
 # 영업 시간 더보기 버튼 클릭
-def clickTimeMoreButton(driver: webdriver):
+def clickTimeMoreButton(driver: webdriver, divNum: int):
     if not click(driver, 5, By.XPATH, XPath.timeMoreButton.format(divNum=divNum, idx=index)):
         if not click(driver, 5, By.XPATH, XPath.timeMoreButton2.format(divNum=divNum, idx=index)):
             click(driver, 5, By.XPATH, XPath.timeMoreButton3.format(divNum=divNum, idx=index))
@@ -196,6 +196,7 @@ def getHashValue(driver: webdriver, timeout: int, kind: By, value1: str, value2:
     userInfo = dict()
     try:
         # url-> hash value 추출
+        element1 = getElements(driver, timeout, kind, value1)
         element1 = WebDriverWait(driver, timeout).until(EC.visibility_of_element_located((kind, value1)))
         userInfo['userHash'] = element1.get_attribute('href').split('/')[-2]
         # 포함된 user의 정보 가져오기
@@ -362,6 +363,7 @@ def getPlaceInfoDetails(driver: webdriver, geoLocal: Nominatim, name: str) -> bo
         infoText = information.text.split('\n')
         if infoText[0] == '영업시간':
             # more buttom click
+            clickTimeMoreButton(driver, divNum, index)
             if not click(driver, 5, By.XPATH, XPath.timeMoreButton.format(divNum=divNum, idx=index)):
                 if not click(driver, 5, By.XPATH, XPath.timeMoreButton2.format(divNum=divNum, idx=index)):
                     click(driver, 5, By.XPATH, XPath.timeMoreButton3.format(divNum=divNum, idx=index))
