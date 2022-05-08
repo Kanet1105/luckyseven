@@ -29,6 +29,7 @@ def makeDB(dbname, collection):
         db = client[dbname]
         # make collection
         for cname, idxname in collection.items():
+            globals()[cname] = db[cname]
             makeIdx(globals()[cname], idxname)
     except:
         print("DB already exist")
