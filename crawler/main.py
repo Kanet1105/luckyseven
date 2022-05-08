@@ -49,4 +49,3 @@ def getPlaceInfo(driver:webdriver):
 if __name__ == '__main__':
     driver = loadDriver('./chromedriver_win32/chromedriver.exe')
     getPlaceInfo(driver)
-
