@@ -13,7 +13,6 @@ from selenium.common import exceptions
 from geopy.geocoders import Nominatim
 from .config import *
 from .network import *
-from .exception import *
 
 # element 여러개 반환
 def getElements(driver: webdriver, timeout: int, kind: By, value: str) -> list:
