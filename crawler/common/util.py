@@ -65,7 +65,7 @@ def scrollDown(driver: webdriver):
     driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
 
-# 검색어 입력    
+# 검색어 입력
 def search(driver: webdriver, keyword: str):
     search_path = XPath.searchPathKakao
     search_box = getElements(driver, 0.5, By.XPATH, search_path)
