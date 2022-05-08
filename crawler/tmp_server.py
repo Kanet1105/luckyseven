@@ -6,9 +6,6 @@ import schema
 
 
 app = FastAPI()
-# 배치 단위 저장
-reviewMultiline = []
-BATCH_SIZE = 20
 
 
 # 콜렉션마다 인덱스 만들기
@@ -55,14 +52,14 @@ collectionList = {'placeInfo': ('placeName', 'placeAddress'),
                   'reviewInfo': ('placeName', 'placeAddress', 'userHash', 'reviewInfoVisitCount'),
                   'userInfo': ('userHash')}
 # DB생성
-db = makeDB('test1', collectionList)
+db = makeDB('test2', collectionList)
 
 
 @app.post('/PlaceInfoModel')
 async def receivePlaceInfo(data: schema.PlaceInfoModel):
     print("*" *20 , "장소정보 저장", "*"*20)
     data = dict(data)
-    debugPrint(data, mode = 'first')
+    debugPrint(data, mode='first')
 
     try:
         result = db['placeInfo'].insert_one(data)
@@ -76,16 +73,12 @@ async def receivePlaceInfo(data: schema.PlaceInfoModel):
 
 @app.post('/ReviewInfoModel')
 async def receiveReviewInfo(data: schema.ReviewInfoModel):
-    result = False
     data = dict(data)
     debugPrint(data, mode='first')
-    reviewMultiline.append(data)
     try:
-        if len(reviewMultiline) == BATCH_SIZE:
-            print("*" * 20, f"{BATCH_SIZE}개 리뷰 저장", "*" * 20)
-            result = db['reviewInfo'].insert_many(reviewMultiline)
-            debugPrint(result, mode='insert')
-            reviewMultiline.clear()
+        print("*" * 20, "리뷰정보 저장", "*" * 20)
+        result = db['reviewInfo'].insert_one(data)
+        debugPrint(result, mode='insert')
     except:
         print("review 정보 이미 있습니다")
         alreadyData = db['reviewInfo'].find(
