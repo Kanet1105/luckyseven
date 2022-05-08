@@ -32,16 +32,16 @@ class Payload:
             'reviewContent': None,
             'reviewInfoScore': None,
             'reviewInfoVisitDay': None,
-            'reviewInfoVisitCount': None,
+            'reviewInfoVisitCount': 0,
         }
 
         self.userInfo = {
             'userHash': None,
             'userID': None,
-            'reviewNum': None,
-            'photo': None,
-            'following': None,
-            'follower': None,
+            'reviewNum': 0,
+            'photo': 0,
+            'following': 0,
+            'follower': 0,
         }
 
         self.placeNameInfo = {

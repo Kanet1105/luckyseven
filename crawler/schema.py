@@ -39,7 +39,7 @@ class ReviewInfoModel(BaseModel):
 class UserInfoModel(BaseModel):
     userHash: str
     userID: str
-    reviewNum: int
-    photo: int
-    following: int
-    follower: int
+    reviewNum: Optional[int]
+    photo: Optional[int]
+    following: Optional[int]
+    follower: Optional[int]
