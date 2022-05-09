@@ -9,10 +9,33 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 from selenium.common import exceptions
+import time
+import logging
 
 from geopy.geocoders import Nominatim
 from .config import *
 from .network import *
+
+# loop for blocking-call
+def loop(func):
+    tStart = time.perf_counter()
+    tElapsed = 0.0
+    while tElapsed <= 5.0:
+        time.sleep(0.1)
+        func()
+        tElapsed = time.perf_counter() - tStart
+
+
+# file log
+def setLogger(file_name):
+    logger = logging.getLogger()
+    logger.setLevel(logging.ERROR)
+    formatter = logging.Formatter(u'%(asctime)s %(message)s')
+    fileHandler = logging.FileHandler(f'./log/{file_name}.log')
+    fileHandler.setFormatter(formatter)
+    logger.addHandler(fileHandler)
+    return logger
+
 
 # element 여러개 반환
 def getElements(driver: webdriver, timeout: int, kind: By, value: str) -> list:
@@ -29,6 +52,7 @@ def getElements(driver: webdriver, timeout: int, kind: By, value: str) -> list:
         print(error)
         return []
 
+
 # element 값 하나 반환
 def getValue(driver: webdriver, timeout: int, kind: By, value: str) -> str:
     try:
@@ -43,6 +67,7 @@ def getValue(driver: webdriver, timeout: int, kind: By, value: str) -> str:
         print("Unexpected Exception")
         print(error)
         return ""
+
 
 # iframe 전환
 def switchToFrame(driver: webdriver, timeout: int, kind: By, value: str) -> bool:
@@ -72,6 +97,7 @@ def click(driver: webdriver, timeout: int, kind: By, value: str) -> bool:
         return False
     except IndexError:
         return False
+
 
 # scroll 끝까지 내리기
 def scrollDown(driver: webdriver):
@@ -168,7 +194,6 @@ def countDivNum(driver: webdriver):
 
 
 # 영업 시간 더보기 버튼 클릭
-
 def clickTimeMoreButton(driver: webdriver, divNum: int, index: int):
     if not click(driver, 5, By.XPATH, XPath.timeMoreButton.format(divNum=divNum, idx=index)):
         if not click(driver, 5, By.XPATH, XPath.timeMoreButton2.format(divNum=divNum, idx=index)):
@@ -177,17 +202,21 @@ def clickTimeMoreButton(driver: webdriver, divNum: int, index: int):
 
 # 메뉴 정보 받아오기
 def getMenuInfo(driver):
-    while getElements(driver, 5, By.CLASS_NAME, ClassName.menuClass):
-        click(driver, 5, By.XPATH, XPath.menuMoreButton)
+    while getElements(driver, 5, By.XPATH, XPath.menuMoreButton):
+        if not click(driver, 5, By.XPATH, XPath.menuMoreButton):
+            break
+
     if getElements(driver, 5, By.CLASS_NAME, ClassName.deliveryClass):
         menuList = getElements(driver, 5, By.CLASS_NAME, ClassName.deliveryMenuNameClass)
         menuPrice = getElements(driver, 5, By.CLASS_NAME, ClassName.deliveryMenuPriceClass)
     elif getElements(driver, 5, By.CLASS_NAME, ClassName.takeOutMenuNameClass):
         menuList = getElements(driver, 5, By.CLASS_NAME, ClassName.takeOutMenuNameClass)
         menuPrice = getElements(driver, 5, By.CLASS_NAME, ClassName.deliveryMenuPriceClass)
-    else:
+    elif getElements(driver, 5, By.CLASS_NAME, ClassName.menuListClass):
         menuList = getElements(driver, 5, By.CLASS_NAME, ClassName.menuListClass)
         menuPrice = getElements(driver, 5, By.CLASS_NAME, ClassName.menuPriceClass)
+    else:
+        return [], []
     return menuList, menuPrice
 
 
@@ -197,9 +226,11 @@ def clickTab(driver: webdriver, name: str):
 
     for i, j in enumerate(tabElements):
         if j.text == name:
-            click(driver, 5, By.XPATH, XPath.reviewTab.format(index=i + 1))
+            if not click(driver, 2, By.XPATH, XPath.reviewTab.format(index=i + 1)):
+                if not click(driver, 2, By.XPATH, XPath.menuTab2Path.format(index=i + 1)):
+                    if not click(driver, 2, By.XPATH, XPath.menuTab3Path.format(index=i + 1)):
+                        return False
             return True
-
     return False
 
 
@@ -326,8 +357,7 @@ def getReviewInfo(driver: webdriver, placeName: str, address: str, prevNum: int)
                 sendData("ReviewInfoModel", reviewData)
                 sendData("UserInfoModel", userData)
         prevNum = len(reviewElements)
-        if finish or not click(driver, 2, By.CLASS_NAME, ClassName.reviewMoreButtonClass):
-            break
+        if finish or not click(driver, 2, By.CLASS_NAME, ClassName.reviewMoreButtonClass): break
 
 
 def loadPlacePage(driver: webdriver) -> bool:
@@ -450,6 +480,8 @@ def getPlaceInfoDetails(driver: webdriver, geoLocal: Nominatim, name: str) -> bo
         if menuList :
             for menu_idx in range(len(menuList) - 1):
                 data['menu'][menuList[menu_idx].text] = menuPrice[menu_idx].text
+        else:
+            menuErrorLogger.error(name)
 
     driver.refresh()
     loadPlacePage(driver)
@@ -473,3 +505,5 @@ def getPlaceInfoDetails(driver: webdriver, geoLocal: Nominatim, name: str) -> bo
 
     driver.switch_to.parent_frame()
     return True
+
+menuErrorLogger = setLogger('menu_tab_error')

@@ -31,9 +31,9 @@ class XPath:
     firstFetched = '//*[@id="_pcmap_list_scroll_container"]/ul/li[1]/div[1]/a[1]'
 
     # place info
-    menuTabPath = '//*[@id="app-root"]/div/div/div/div[4]/div/div/div/div/a[{num}]'
-    menuTab2Path = '//*[@id="app-root"]/div/div/div/div[4]/div/div/div/div/div/div[2]/div/div/a[{num}]/span'
-    menuTab3Path = '//*[@id="root"]/div[2]/div/header/div[2]/div/a[{num}]/span'
+    menuTabPath = '//*[@id="app-root"]/div/div/div/div[4]/div/div/div/div/a[{index}]'
+    menuTab2Path = '//*[@id="app-root"]/div/div/div/div[4]/div/div/div/div/div/div[2]/div/div/a[{index}]/span'
+    menuTab3Path = '//*[@id="root"]/div[2]/div/header/div[2]/div/a[{index}]/span'
     menuMoreButton = '//*[@id="app-root"]/div/div/div/div[6]/div/div[1]/div[2]/a'
 
     placeMeanRating = '//*[@id="app-root"]/div/div/div/div[2]/div[1]/div[2]/span[1]/em'

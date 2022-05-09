@@ -37,7 +37,8 @@ def getPlaceInfo(driver:webdriver):
     geoLocal = Nominatim(user_agent='South Korea')
     placeList = loadList('./data/name_list_final.pkl')
     noPlace = []
-    for name, address in placeList:
+
+    for name, address in placeList[20000:21000]:
         placeName = name + " " + address
         result = getPlaceInfoDetails(driver, geoLocal, placeName)
         if not result:
@@ -47,6 +48,7 @@ def getPlaceInfo(driver:webdriver):
     constructPickle('./data/resend_place', resend.PlaceInfoModel)
     constructPickle('./data/resend_review', resend.ReviewInfoModel)
     constructPickle('./data/resend_user', resend.UserInfoModel)
+
 
 if __name__ == '__main__':
     driver = loadDriver('./chromedriver_win32/chromedriver.exe')
