@@ -7,6 +7,6 @@ class Logger:
         self.logger = logging.getLogger()
         self.logger.setLevel(logging.ERROR)
         formatter = logging.Formatter('[%(asctime)s]: %(message)s\n')
-        fileHandler = logging.FileHandler(f'./log/{logPath}.log')
+        fileHandler = logging.FileHandler(f'{logPath}', encoding='utf-8')
         fileHandler.setFormatter(formatter)
         self.logger.addHandler(fileHandler)

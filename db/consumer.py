@@ -1,55 +1,50 @@
-"""
-Batch Pull Consumer
-"""
-
 import asyncio
 import nats
 from nats.errors import TimeoutError
 import pickle
-import sys
-from logger import Logger
+import traceback
+from mongoclient import MongoConnector as MC
 
 
-LOG = Logger('$path')
-HOST = '192.168.1.101:30042'
-PODNAME = 'psub-1'
+class BatchPullConsumer:
+    def __init__(self, dataLogger, errorLogger):
+        self.dataLogger = dataLogger
+        self.errorLogger = errorLogger
+        self.client = None
+        self.jetstream = None
+        self.sub = None
+        self.mongoClient = None
+        self.subjectName = None
 
-
-async def connect(
-        host: str,
-        subject: str,
-        durable: str,
-        stream: str,
-        subjects: list,
-):
-    try:
-        client = await nats.connect(host)
-        jetstream = client.jetstream()
-        # await jetstream.delete_stream('data')
-        streamInfo = await jetstream.add_stream(name=stream, subjects=subjects)
-        print(streamInfo)
-        sub = await jetstream.pull_subscribe(subject, durable, stream)
-        return sub
-    except TimeoutError:
-        return False
-
-
-async def main():
-    sub = await connect(HOST, 'scraped', PODNAME, 'data', ['scraped'])
-    if sub is False:
-        print('cannot connect to the Nats server')
-        sys.exit(1)
-
-    while True:
+    async def connect(
+            self,
+            host: str,
+            durable: str,
+            stream: str,
+            subject: list,
+    ):
         try:
-            batch = await sub.fetch(10, 5.0)
-            for i in batch:
-                print(pickle.loads(i.data))
-                await i.ack()
+            self.client = await nats.connect(host)
+            self.jetstream = self.client.jetstream()
+            self.sub = await self.jetstream.pull_subscribe(subject[0], durable, stream)
+            self.subjectName = subject[0]
+            print(await self.sub.consumer_info())
+        except TimeoutError:
+            return False
+
+        self.mongoClient = MC('127.0.0.1', 27017, 'test', self.errorLogger, self.dataLogger)
+
+    async def read(self):
+        try:
+            pulled = await self.sub.fetch(10, 5.0)
+            batch = [pickle.loads(message.data) for message in pulled]
+            self.mongoClient.batchWrite(batch, self.subjectName)
+
+            # asynchronous ack to the Nats server
+            for message in pulled:
+                await message.ack()
+            await asyncio.sleep(1)
         except TimeoutError:
             pass
-
-
-if __name__ == '__main__':
-    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-    asyncio.run(main())
+        except:
+            print(traceback.format_exc())
