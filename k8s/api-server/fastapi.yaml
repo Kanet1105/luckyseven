@@ -74,7 +74,7 @@ data:
       
       HOST = '{address}:{port}'
       app = FastAPI(redoc_url=None)
-      pub = Publisher(HOST.format(address='192.168.1.101', port='8000'))
+      pub = Publisher(HOST.format(address='10.99.148.136', port='4222'))
       
       
       async def publish(data, subject, timeout, stream):
@@ -82,6 +82,10 @@ data:
           ack = await pub.publish(subject, payload, timeout, stream)
           return ack
       
+      
+      @app.get('/')
+      async def root():
+          return "api server"
       
       @app.post('/PlaceInfoModel')
       async def receivePlaceInfo(data: schema.PlaceInfoModel):
