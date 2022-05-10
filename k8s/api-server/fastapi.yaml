@@ -115,7 +115,7 @@ data:
       import schema
       
       HOST = '{address}:{port}'
-      app = FastAPI()
+      app = FastAPI(redoc_url=None)
       pub = Publisher(HOST.format(address='10.106.59.62', port='4222'))
       
       
