@@ -24,88 +24,78 @@ data:
     pydantic==1.9.0
     uvicorn==0.17.6
     nats-py==2.1.0
+  __init__.py: |
+  publisher.py: |
+      import nats
+      from nats.errors import TimeoutError
+      
+      
+      class Publisher:
+          def __init__(self, host):
+              self.host = host
+              self.client = None
+              self.jetstream = None
+      
+          async def connect(self):
+              try:
+                  self.client = await nats.connect(self.host)
+                  self.jetstream = self.client.jetstream()
+              except TimeoutError:
+                  return False
+      
+          async def publish(
+                  self,
+                  subject: str,
+                  payload: bytes,
+                  timeout: float,
+                  stream: str,
+                  headers: dict = None
+          ):
+              # check jetstream connection
+              if self.jetstream is None:
+                  streamInfo = await self.connect()
+                  if streamInfo is False:
+                      return False
+      
+              # publish the message
+              try:
+                  return await self.jetstream.publish(subject, payload, timeout, stream, headers)
+              except TimeoutError:
+                  return False
   main.py: |
-    from fastapi import FastAPI
-    from fastapi import WebSocket, WebSocketDisconnect
-    from pydantic import BaseModel
-    import nats
-    import traceback
-    import pickle
-
-
-    class ConnectionManager:
-        def __init__(self):
-            self.connections = {}
-            self.client = None
-            self.jetstream = None
-            self.subscription = None
-            self.isInitialized = False
-
-        async def connect2Nats(self):
-            self.client = await nats.connect("10.109.255.3:4222")
-            self.jetstream = self.client.jetstream()
-            self.subscription = await self.jetstream.subscribe("server")
-            print("Subscribed to the server")
-            self.isInitialized = True
-
-        async def onConnection(self, websocket: WebSocket, uid: str):
-            if uid in self.connections:
-                print("uid: {id} exists.".format(id=uid))
-            else:
-                await websocket.accept()
-                self.connections[uid] = websocket
-                print("-" * 50)
-                print("A new connection has been made")
-                print("uid: {id}".format(id=uid))
-                print("socket: {sock}".format(sock=self.connections[uid]))
-
-        def onDisconnection(self, uid: str):
-            print("-" * 50)
-            print("A client disconnected")
-            print("uid: {id}".format(id=uid))
-            print("socket: {sock}".format(sock=self.connections[uid]))
-            del self.connections[uid]
-
-        async def publish(self, uid: str):
-            data = self.connections[uid].receive_json()
-            print(data)
-
-
-    class MinimalData(BaseModel):
-        index: int
-        timestamp: float
-        contents: str
-
-
-    app = FastAPI()
-    print("Starting the api server.")
-    manager = ConnectionManager()
-    print("Initializing the connection manager.")
-
-
-    @app.get("/")
-    async def root():
-        return {"websocket uri": "/websocket/$uid"}
-
-
-    @app.post("/process")
-    async def process(data: MinimalData):
-        if not manager.isInitialized:
-            await manager.connect2Nats()
-        await manager.jetstream.publish("client", pickle.dumps(data))
-        received = await manager.subscription.next_msg()
-        await received.ack()
-        return pickle.loads(received.data)
-
-
-    @app.websocket("/websocket/{uid}")
-    async def streamPublish(websocket: WebSocket, uid: str):
-        await manager.onConnection(websocket, uid)
-        try:
-            while True:
-                await manager.publish(uid)
-        except WebSocketDisconnect:
-            manager.onDisconnection(uid)
+      """
+      The API server handle payload agnostic writes to the Nats Jetstream Server
+      """
+      
+      from fastapi import FastAPI
+      import pickle
+      from publisher import Publisher
+      from templates import schema
+      
+      HOST = '{address}:{port}'
+      app = FastAPI(redoc_url=None)
+      pub = Publisher(HOST.format(address='192.168.1.101', port='8000'))
+      
+      
+      async def publish(data, subject, timeout, stream):
+          payload = pickle.dumps(data.dict())
+          ack = await pub.publish(subject, payload, timeout, stream)
+          return ack
+      
+      
+      @app.post('/PlaceInfoModel')
+      async def receivePlaceInfo(data: schema.PlaceInfoModel):
+          return await publish(data, 'scraped', 2.0, 'data')
+      
+      
+      @app.post('/ReviewInfoModel')
+      async def receiveReviewInfo(data: schema.ReviewInfoModel):
+          return await publish(data, 'scraped', 2.0, 'data')
+      
+      
+      @app.post('/UserInfoModel')
+      async def receiveUserInfo(data: schema.UserInfoModel):
+          return await publish(data, 'scraped', 2.0, 'data')
 ---
 apiVersion: apps/v1
 kind: Deployment
