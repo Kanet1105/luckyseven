@@ -74,7 +74,7 @@ data:
       
       HOST = '{address}:{port}'
       app = FastAPI()
-      pub = Publisher(HOST.format(address='10.99.148.136', port='4222'))
+      pub = Publisher(HOST.format(address='10.106.59.62', port='4222'))
       
       
       async def publish(data, subject, timeout, stream):
