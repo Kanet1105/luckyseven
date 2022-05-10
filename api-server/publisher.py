@@ -8,7 +8,7 @@ class Publisher:
         self.client = None
         self.jetstream = None
 
-    async def connect(self):
+    async def connect(self) -> object:
         try:
             self.client = await nats.connect(self.host)
             self.jetstream = self.client.jetstream()
@@ -21,8 +21,8 @@ class Publisher:
             payload: bytes,
             timeout: float,
             stream: str,
-            headers: dict = None
-    ):
+            headers: dict,
+    ) -> object:
         # check jetstream connection
         if self.jetstream is None:
             streamInfo = await self.connect()
