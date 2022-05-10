@@ -78,7 +78,7 @@ data:
               self.client = None
               self.jetstream = None
       
-          async def connect(self):
+          async def connect(self) -> object:
               try:
                   self.client = await nats.connect(self.host)
                   self.jetstream = self.client.jetstream()
@@ -91,8 +91,8 @@ data:
                   payload: bytes,
                   timeout: float,
                   stream: str,
-                  headers: dict = None
-          ):
+                  headers: dict,
+          ) -> object:
               # check jetstream connection
               if self.jetstream is None:
                   streamInfo = await self.connect()
@@ -107,6 +107,7 @@ data:
   main.py: |
       """
       The API server handle payload agnostic writes to the Nats Jetstream Server
+      subscription must match the ORM class name.
       """
       
       from fastapi import FastAPI
@@ -115,33 +116,29 @@ data:
       import schema
       
       HOST = '{address}:{port}'
-      app = FastAPI(redoc_url=None)
-      pub = Publisher(HOST.format(address='10.106.59.62', port='4222'))
+      app = FastAPI()
+      pub = Publisher(HOST)
       
       
-      async def publish(data, subject, timeout, stream):
+      async def publish(data, subject, timeout, stream, headers=None) -> object:
           payload = pickle.dumps(data.dict())
-          ack = await pub.publish(subject, payload, timeout, stream)
+          ack = await pub.publish(subject, payload, timeout, stream, headers)
           return ack
       
       
-      @app.get('/')
-      async def root():
-          return "api server"
-      
       @app.post('/PlaceInfoModel')
-      async def receivePlaceInfo(data: schema.PlaceInfoModel):
-          return await publish(data, 'scraped', 2.0, 'data')
+      async def receivePlaceInfo(data: schema.PlaceInfoModel) -> object:
+          return await publish(data, 'PlaceInfoModel', 2.0, 'data')
       
       
       @app.post('/ReviewInfoModel')
-      async def receiveReviewInfo(data: schema.ReviewInfoModel):
-          return await publish(data, 'scraped', 2.0, 'data')
+      async def receiveReviewInfo(data: schema.ReviewInfoModel) -> object:
+          return await publish(data, 'ReviewInfoModel', 2.0, 'data')
       
       
       @app.post('/UserInfoModel')
-      async def receiveUserInfo(data: schema.UserInfoModel):
-          return await publish(data, 'scraped', 2.0, 'data')
+      async def receiveUserInfo(data: schema.UserInfoModel) -> object:
+          return await publish(data, 'UserInfoModel', 2.0, 'data')
 ---
 apiVersion: apps/v1
 kind: Deployment
