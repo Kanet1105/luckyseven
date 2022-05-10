@@ -79,13 +79,13 @@ async def receivePlaceInfo(data: schema.PlaceInfoModel):
 
 
 @app.post('/ReviewInfoModel')
-async def receiveReviewInfo(data: schema.BatchReview):
-    data = dict(data)['batchList']
+async def receiveReviewInfo(data: schema.ReviewInfoModel):
+    data = dict(data)
     debugPrint(data, mode='first')
     # print(data)
     try:
         print("*" * 20, "리뷰정보 저장", "*" * 20)
-        result = db['reviewInfo'].insert_many(data)
+        result = db['reviewInfo'].inser_one(data)
         debugPrint(result, mode='insert')
     except errors.DuplicateKeyError:
         print("review 정보 이미 있습니다")

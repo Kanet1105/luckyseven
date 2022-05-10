@@ -7,7 +7,10 @@ import nats
 from nats.errors import TimeoutError
 import pickle
 import sys
+from logger import Logger
 
+
+LOG = Logger('$path')
 HOST = '192.168.1.101:30042'
 PODNAME = 'psub-1'
 

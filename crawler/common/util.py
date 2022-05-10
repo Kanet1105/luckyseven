@@ -304,7 +304,6 @@ def getReviewInfo(driver: webdriver, placeName: str, address: str, prevNum: int)
     # print(placeName) # 디버깅 위한 출력
     # 최신순 버튼 클릭
     clickRecent(driver)
-    batchList = []
     finish = False
     while True :
         # 현재 페이지 리뷰 element들 가져오기
@@ -352,13 +351,11 @@ def getReviewInfo(driver: webdriver, placeName: str, address: str, prevNum: int)
 
                 print("user: ", userData)
                 print("review: ", reviewData)
-                batchList.append(reviewData)
                 # print(reviewData) # 디버깅을 위한 출력
-                # sendData("ReviewInfoModel", reviewData)
+                sendData("ReviewInfoModel", reviewData)
                 sendData("UserInfoModel", userData)
         prevNum = len(reviewElements)
         if finish or not click(driver, 2, By.CLASS_NAME, ClassName.reviewMoreButtonClass): break
-    sendData("ReviewInfoModel", {"batchList": batchList})
 
 def loadPlacePage(driver: webdriver) -> bool:
     # switch to the search iframe
