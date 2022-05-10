@@ -497,7 +497,7 @@ def getPlaceInfoDetails(driver: webdriver, geoLocal: Nominatim, name: str) -> bo
                 try:
                     data['like'][likeTopic[idx].text.split("\"")[1]] = int(likeNum[idx].text.split('\n')[-1])
                 except:
-                    data['like'][likeTopic[idx].text.split("\"")[1]] = 0
+                    pass
     sendData("PlaceInfoModel", data)
     print(data)
     getReviewInfo(driver, data['placeName'], data['placeAddress'], len(data['like']))
