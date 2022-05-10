@@ -33,16 +33,17 @@ def getReview(driver:webdriver):
 
 
 # 장소 정보
-def getPlaceInfo(driver:webdriver):
+def getPlaceInfo(driver:webdriver, startidx=20000, finalidx=21000):
     geoLocal = Nominatim(user_agent='South Korea')
     placeList = loadList('./data/name_list_final.pkl')
     noPlace = []
 
-    for name, address in placeList[20000:21000]:
+    for idx, (name, address) in enumerate(placeList[startidx:finalidx], start=startidx):
         placeName = name + " " + address
         result = getPlaceInfoDetails(driver, geoLocal, placeName)
         if not result:
             noPlace.append(name)
+
 
     constructPickle('./data/no_place', noPlace)
     constructPickle('./data/resend_place', resend.PlaceInfoModel)

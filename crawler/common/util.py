@@ -304,7 +304,7 @@ def getReviewInfo(driver: webdriver, placeName: str, address: str, prevNum: int)
     # print(placeName) # 디버깅 위한 출력
     # 최신순 버튼 클릭
     clickRecent(driver)
-
+    batchList = []
     finish = False
     while True :
         # 현재 페이지 리뷰 element들 가져오기
@@ -352,13 +352,13 @@ def getReviewInfo(driver: webdriver, placeName: str, address: str, prevNum: int)
 
                 print("user: ", userData)
                 print("review: ", reviewData)
-
+                batchList.append(reviewData)
                 # print(reviewData) # 디버깅을 위한 출력
-                sendData("ReviewInfoModel", reviewData)
+                # sendData("ReviewInfoModel", reviewData)
                 sendData("UserInfoModel", userData)
         prevNum = len(reviewElements)
         if finish or not click(driver, 2, By.CLASS_NAME, ClassName.reviewMoreButtonClass): break
-
+    sendData("ReviewInfoModel", {"batchList": batchList})
 
 def loadPlacePage(driver: webdriver) -> bool:
     # switch to the search iframe
@@ -448,7 +448,9 @@ def getPlaceInfoDetails(driver: webdriver, geoLocal: Nominatim, name: str) -> bo
     if getElements(driver, 5, By.CLASS_NAME, ClassName.themeKeywordClass):
         themeData = getElements(driver, 5, By.CLASS_NAME, ClassName.themeDataClass)
         for value in themeData:
-            data['themeKeywords'].append(value.text.split(', ')[-1])
+            value = value.text.split(', ')[-1]
+            if value:
+                data['themeKeywords'].append(value)
 
     # get popularity
     tabList = getElements(driver, 5, By.XPATH, XPath.placeTab)
@@ -496,9 +498,9 @@ def getPlaceInfoDetails(driver: webdriver, geoLocal: Nominatim, name: str) -> bo
             likeTopic = getElements(driver, 5, By.CLASS_NAME, ClassName.likeTopicClass)
             for idx in range(len(likeNum)):
                 try:
-                    data['like'][likeTopic[idx].text] = int(likeNum[idx].text.split('\n')[-1])
+                    data['like'][likeTopic[idx].text.split("\"")[1]] = int(likeNum[idx].text.split('\n')[-1])
                 except:
-                    data['like'][likeTopic[idx].text] = 0
+                    data['like'][likeTopic[idx].text.split("\"")[1]] = 0
     sendData("PlaceInfoModel", data)
     print(data)
     getReviewInfo(driver, data['placeName'], data['placeAddress'], len(data['like']))

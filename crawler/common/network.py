@@ -65,4 +65,3 @@ def sendData(kind: str, data: dict):
     if result.status_code != 200:
         exec(f'resend.{kind}.append({data})')
     print(result)
-

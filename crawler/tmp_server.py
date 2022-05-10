@@ -53,7 +53,7 @@ collectionList = {'placeInfo': ('placeName', 'placeAddress'),
                   'reviewInfo': ('placeName', 'placeAddress', 'userHash', 'reviewInfoVisitCount'),
                   'userInfo': ('userHash')}
 # DB생성
-db = makeDB('test2', collectionList)
+db = makeDB('test5', collectionList)
 
 @app.post('/PlaceInfoModel')
 async def receivePlaceInfo(data: schema.PlaceInfoModel):
@@ -79,16 +79,19 @@ async def receivePlaceInfo(data: schema.PlaceInfoModel):
 
 
 @app.post('/ReviewInfoModel')
-async def receiveReviewInfo(data: schema.ReviewInfoModel):
-    data = dict(data)
+async def receiveReviewInfo(data: schema.BatchReview):
+    data = dict(data)['batchList']
     debugPrint(data, mode='first')
-
+    # print(data)
     try:
         print("*" * 20, "리뷰정보 저장", "*" * 20)
-        result = db['reviewInfo'].insert_one(data)
+        result = db['reviewInfo'].insert_many(data)
         debugPrint(result, mode='insert')
     except errors.DuplicateKeyError:
         print("review 정보 이미 있습니다")
+        pass
+    except errors.BulkWriteError:
+        print(traceback.format_exc())
         pass
     except Exception as reviewError:
         print(traceback.format_exc())

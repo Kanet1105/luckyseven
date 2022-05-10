@@ -35,6 +35,8 @@ class ReviewInfoModel(BaseModel):
     reviewInfoVisitDay: Optional[str]
     reviewInfoVisitCount: Optional[int]
 
+class BatchReview(BaseModel):
+    batchList: list
 
 class UserInfoModel(BaseModel):
     userHash: str
