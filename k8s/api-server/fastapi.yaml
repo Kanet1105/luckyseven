@@ -117,7 +117,7 @@ data:
       
       HOST = '{address}:{port}'
       app = FastAPI()
-      pub = Publisher(HOST.format(address='10.106.59.62', port='4222'))
+      pub = Publisher(HOST)
       
       
       async def publish(data, subject, timeout, stream, headers=None) -> object:
@@ -128,17 +128,17 @@ data:
       
       @app.post('/PlaceInfoModel')
       async def receivePlaceInfo(data: schema.PlaceInfoModel) -> object:
-          return await publish(data, 'PlaceInfoModel', 2.0, 'data')
+          return await publish(data, 'placeInfo', 2.0, 'data')
       
       
       @app.post('/ReviewInfoModel')
       async def receiveReviewInfo(data: schema.ReviewInfoModel) -> object:
-          return await publish(data, 'ReviewInfoModel', 2.0, 'data')
+          return await publish(data, 'reviewInfo', 2.0, 'data')
       
       
       @app.post('/UserInfoModel')
       async def receiveUserInfo(data: schema.UserInfoModel) -> object:
-          return await publish(data, 'UserInfoModel', 2.0, 'data')
+          return await publish(data, 'userInfo', 2.0, 'data')
 ---
 apiVersion: apps/v1
 kind: Deployment
