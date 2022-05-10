@@ -5,7 +5,7 @@ The API server handle payload agnostic writes to the Nats Jetstream Server
 from fastapi import FastAPI
 import pickle
 from publisher import Publisher
-from templates import schema
+import schema
 
 HOST = '{address}:{port}'
 app = FastAPI()
