@@ -73,7 +73,7 @@ data:
       from templates import schema
       
       HOST = '{address}:{port}'
-      app = FastAPI(redoc_url=None)
+      app = FastAPI()
       pub = Publisher(HOST.format(address='10.99.148.136', port='4222'))
       
       
