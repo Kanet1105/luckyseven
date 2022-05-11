@@ -21,8 +21,8 @@ from .network import *
 
 class Util:
     def __init__(self):
-        self.IndexLogger = Logger('C:\\Users\\catty\\PycharmProjects\\luckyseven\\crawler\\log\\SavedIndex.log', "1")
-        self.noplaceLogger = Logger('C:\\Users\\catty\\PycharmProjects\\luckyseven\\crawler\\log\\Noplace.log', "2")
+        self.indexLogger = Logger('C:\\Users\\catty\\PycharmProjects\\luckyseven\\crawler\\log\\SavedIndex.log', "1")
+        self.noPlaceLogger = Logger('C:\\Users\\catty\\PycharmProjects\\luckyseven\\crawler\\log\\Noplace.log', "2")
         self.driver = self.loadDriver('C:\\Users\\catty\\PycharmProjects\\Crawler\\chromedriver_win32\\chromedriver.exe')
 
     # Driver load & get place list
@@ -290,8 +290,8 @@ class Util:
         reviewInfo = dict()
 
         try:
-            element1 = self.getElements(driver, timeout, kind, value1)[0] #WebDriverWait(driver, timeout).until(EC.visibility_of_element_located((kind, value1)))
-            element2 = self.getElements(element1, timeout, kind, value2)  ###############
+            element1 = self.getElements(driver, timeout, kind, value1)[0]
+            element2 = self.getElements(element1, timeout, kind, value2)
 
             if element2:
                 for i in element2:
@@ -316,7 +316,7 @@ class Util:
         # 최신순 버튼 클릭
         self.clickRecent(driver)
         finish = False
-        while True :
+        while True:
             # 현재 페이지 리뷰 element들 가져오기
             self.scrollDown(driver)
             reviewElements = self.getElements(driver, 10, By.CLASS_NAME, ClassName.reviewClass)
@@ -366,7 +366,8 @@ class Util:
                     sendData("ReviewInfoModel", reviewData)
                     sendData("UserInfoModel", userData)
             prevNum = len(reviewElements)
-            if finish or not self.click(driver, 2, By.CLASS_NAME, ClassName.reviewMoreButtonClass): break
+            if finish or not self.click(driver, 2, By.CLASS_NAME, ClassName.reviewMoreButtonClass):
+                break
 
     def loadPlacePage(self, driver: webdriver) -> bool:
         # switch to the search iframe

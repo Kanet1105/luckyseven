@@ -22,8 +22,8 @@ def getPlaceInfo(util:Util, startidx=15000, finalidx=16000):
         placeName = name + " " + address
         result = util.getPlaceInfoDetails(geoLocal, placeName)
         if not result:
-            util.noplaceLogger.logger.error(f"{idx} {placeName}")
-        util.IndexLogger.logger.error(f"{idx} {placeName}")
+            util.noPlaceLogger.logger.error(f"{idx} {placeName}")
+        util.indexLogger.logger.error(f"{idx} {placeName}")
 
 
     # constructPickle('./data/no_place', noPlace)
