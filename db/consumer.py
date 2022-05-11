@@ -7,7 +7,13 @@ from mongoclient import MongoConnector as MC
 
 
 class BatchPullConsumer:
-    def __init__(self, dataLogger, errorLogger):
+    def __init__(
+            self,
+            batchSize: int,
+            dataLogger: object,
+            errorLogger: object
+    ):
+        self.batchSize = batchSize
         self.dataLogger = dataLogger
         self.errorLogger = errorLogger
         self.client = None
@@ -36,7 +42,7 @@ class BatchPullConsumer:
 
     async def read(self):
         try:
-            pulled = await self.sub.fetch(10, 5.0)
+            pulled = await self.sub.fetch(self.batchSize, 5.0)
             batch = [pickle.loads(message.data) for message in pulled]
             self.mongoClient.batchWrite(batch, self.subjectName)
 

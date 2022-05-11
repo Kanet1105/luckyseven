@@ -7,6 +7,7 @@ import nats
 from consumer import BatchPullConsumer
 from logger import Logger
 
+BATCHSIZE = 10
 ERRORLOGER = Logger('D:\\PythonProjects\\L7D\\logs\\errors.log')
 DATALOGGER = Logger('D:\\PythonProjects\\L7D\\logs\\data.log')
 HOST = '192.168.1.101:30042'
@@ -24,7 +25,7 @@ async def main():
     subscribers = []
     count = 1
     for topic in SUBJECTS:
-        client = BatchPullConsumer(ERRORLOGER, DATALOGGER)
+        client = BatchPullConsumer(BATCHSIZE, ERRORLOGER, DATALOGGER)
         await client.connect(HOST, PODNAME.format(index=count), STREAM, [topic])
         subscribers.append(client)
         count += 1
