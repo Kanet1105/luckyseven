@@ -357,7 +357,7 @@ class Util:
                     reviewData['reviewUserID'] = reviewUserId
                     reviewData['placeName'] = placeName
                     reviewData['placeAddress'] = address
-                    reviewData['reviewContent'] = reviewContent
+                    reviewData['reviewContent'] = self.makeTokenizing(reviewContent)
                     reviewData.update(reviewInfo)
 
                     print("user: ", userData)
