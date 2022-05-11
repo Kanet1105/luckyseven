@@ -11,7 +11,6 @@ class MongoConnector:
             port: int,
             dbName: str,
             errorLogger,
-            dataLogger,
     ):
         self.client = MongoClient(address, port)
         self.collectionList = {
@@ -22,7 +21,6 @@ class MongoConnector:
         self.db = None
         self.makeDB(dbName)
         self.errorLogger = errorLogger
-        self.dataLogger = dataLogger
 
     def makeDB(self, dbName):
         try:
@@ -48,11 +46,8 @@ class MongoConnector:
         try:
             print(self.db[collectionName].insert_many(data))
         except errors.DuplicateKeyError:
-            self.errorLogger.logger.error('the review already exists.')
-            self.dataLogger.logger.error(data)
+            self.errorLogger.logger.error(traceback.format_exc())
         except errors.BulkWriteError:
             self.errorLogger.logger.error(traceback.format_exc())
-            self.dataLogger.logger.error(data)
         except:
             self.errorLogger.logger.error(traceback.format_exc())
-            self.dataLogger.logger.error(data)

@@ -10,11 +10,9 @@ class BatchPullConsumer:
     def __init__(
             self,
             batchSize: int,
-            dataLogger: object,
             errorLogger: object
     ):
         self.batchSize = batchSize
-        self.dataLogger = dataLogger
         self.errorLogger = errorLogger
         self.client = None
         self.jetstream = None
@@ -38,7 +36,7 @@ class BatchPullConsumer:
         except TimeoutError:
             return False
 
-        self.mongoClient = MC('127.0.0.1', 27017, 'test', self.errorLogger, self.dataLogger)
+        self.mongoClient = MC('127.0.0.1', 27017, 'test', self.errorLogger)
 
     async def read(self):
         try:
