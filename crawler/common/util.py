@@ -10,7 +10,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 from selenium.common import exceptions
 import time
-
+import re
 
 from geopy.geocoders import Nominatim
 from .config import *
@@ -244,6 +244,17 @@ def clickRecent(driver: webdriver):
         for i in listButton:
             if i.text == '최신순':
                 click(i, 5, By.CLASS_NAME, ClassName.recentClass2)
+
+
+# 리뷰 내용 Tokenizing
+def makeTokenizing(content: str):
+    try:
+        content = re.sub('[^A-Za-z0-9가-힣]', ' ', content)
+        content = " ".join(content.split())
+    except:
+        return ""
+
+    return content
 
 
 # url 정보에서 user hash value 가져오기
