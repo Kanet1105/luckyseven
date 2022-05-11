@@ -1,6 +1,11 @@
 from common.util import *
 from selenium.webdriver.chrome.service import Service
 from common.network import *
+from common.logger import Logger
+
+IndexLogger = Logger('C:\\Users\\pdj\\PycharmProjects\\luckyseven\\crawler\\log\\SavedIndex.log', "1")
+noplaceLogger = Logger('C:\\Users\\pdj\\PycharmProjects\\luckyseven\\crawler\\log\\Noplace.log', "2")
+
 
 # Driver load & get place list
 def loadDriver(driver_path: str):
@@ -33,7 +38,7 @@ def getReview(driver:webdriver):
 
 
 # 장소 정보
-def getPlaceInfo(driver:webdriver, startidx=20000, finalidx=21000):
+def getPlaceInfo(driver:webdriver, startidx=15000, finalidx=16000):
     geoLocal = Nominatim(user_agent='South Korea')
     placeList = loadList('./data/name_list_final.pkl')
     noPlace = []
@@ -42,10 +47,11 @@ def getPlaceInfo(driver:webdriver, startidx=20000, finalidx=21000):
         placeName = name + " " + address
         result = getPlaceInfoDetails(driver, geoLocal, placeName)
         if not result:
-            noPlace.append(name)
+            noplaceLogger.logger.error(f"{idx} {placeName}")
+        IndexLogger.logger.error(f"{idx} {placeName}")
 
 
-    constructPickle('./data/no_place', noPlace)
+    # constructPickle('./data/no_place', noPlace)
     constructPickle('./data/resend_place', resend.PlaceInfoModel)
     constructPickle('./data/resend_review', resend.ReviewInfoModel)
     constructPickle('./data/resend_user', resend.UserInfoModel)

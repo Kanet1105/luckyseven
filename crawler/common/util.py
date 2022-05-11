@@ -10,7 +10,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 from selenium.common import exceptions
 import time
-import logging
+
 
 from geopy.geocoders import Nominatim
 from .config import *
@@ -26,15 +26,15 @@ def loop(func):
         tElapsed = time.perf_counter() - tStart
 
 
-# file log
-def setLogger(file_name):
-    logger = logging.getLogger()
-    logger.setLevel(logging.ERROR)
-    formatter = logging.Formatter(u'%(asctime)s %(message)s')
-    fileHandler = logging.FileHandler(f'./log/{file_name}.log')
-    fileHandler.setFormatter(formatter)
-    logger.addHandler(fileHandler)
-    return logger
+# # file log
+# def setLogger(file_name):
+#     logger = logging.getLogger()
+#     logger.setLevel(logging.ERROR)
+#     formatter = logging.Formatter(u'%(asctime)s %(message)s')
+#     fileHandler = logging.FileHandler(f'./log/{file_name}.log')
+#     fileHandler.setFormatter(formatter)
+#     logger.addHandler(fileHandler)
+#     return logger
 
 
 # element 여러개 반환
@@ -96,6 +96,8 @@ def click(driver: webdriver, timeout: int, kind: By, value: str) -> bool:
     except exceptions.ElementClickInterceptedException:
         return False
     except IndexError:
+        return False
+    except:
         return False
 
 
@@ -479,8 +481,8 @@ def getPlaceInfoDetails(driver: webdriver, geoLocal: Nominatim, name: str) -> bo
         if menuList :
             for menu_idx in range(len(menuList) - 1):
                 data['menu'][menuList[menu_idx].text] = menuPrice[menu_idx].text
-        else:
-            menuErrorLogger.error(name)
+        # else:
+        #     menuErrorLogger.error(name)
 
     driver.refresh()
     loadPlacePage(driver)
@@ -504,5 +506,3 @@ def getPlaceInfoDetails(driver: webdriver, geoLocal: Nominatim, name: str) -> bo
 
     driver.switch_to.parent_frame()
     return True
-
-menuErrorLogger = setLogger('menu_tab_error')
