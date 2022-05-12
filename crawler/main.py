@@ -20,7 +20,6 @@ def getPlaceInfo(util:Util, startidx: int, finalidx: int):
 
     for idx, (name, address) in enumerate(placeList[startidx:finalidx], start=startidx):
         placeName = name + " " + address
-        placeName = '루프탑2018'
         result = util.getPlaceInfoDetails(geoLocal, placeName)
         if not result:
             util.errorLogger.logger.error(f"{idx} {placeName}")
@@ -34,10 +33,15 @@ def getPlaceInfo(util:Util, startidx: int, finalidx: int):
 
 
 if __name__ == '__main__':
+    # 서버 http://ip:port
     host = ''
+    
+    # 로그 파일 & 웹드라이버 경로
     indexLogPath = ''
     errorLogPath = ''
     webdriverPath = ''
+
+    # 장소 index
     startIndex = 0
     endIndex = 22000
     util = Util(host, indexLogPath, errorLogPath, webdriverPath)
