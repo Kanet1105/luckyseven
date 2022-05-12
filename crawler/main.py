@@ -14,7 +14,7 @@ def getPlaceName(util: Util):
 
 
 # 장소 & 리뷰 정보
-def getPlaceInfo(util:Util, startidx=4000, finalidx=4001):
+def getPlaceInfo(util:Util, startidx: int, finalidx: int):
     geoLocal = Nominatim(user_agent='South Korea')
     placeList = loadList('./data/name_list_final.pkl')
 
@@ -34,5 +34,10 @@ def getPlaceInfo(util:Util, startidx=4000, finalidx=4001):
 
 
 if __name__ == '__main__':
-    util = Util()
-    getPlaceInfo(util, 5513, 6000)
+    indexLogPath = ''
+    errorLogPath = ''
+    webdriverPath = ''
+    startIndex = 0
+    endIndex = 22000
+    util = Util(indexLogPath, errorLogPath, webdriverPath)
+    getPlaceInfo(util, startIndex, endIndex)
