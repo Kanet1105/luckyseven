@@ -525,7 +525,7 @@ class Util:
                         data['like'][likeTopic[idx].text.split("\"")[1]] = int(likeNum[idx].text.split('\n')[-1])
                     except:
                         pass
-        return
+
         result = sendData(self.host, "PlaceInfoModel", data, self.errorLogger)
         print("place : ", data)
         if not result:
