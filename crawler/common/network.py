@@ -2,7 +2,7 @@ import traceback
 
 import requests
 
-HOST = 'http://61.254.240.172:30000/{uri}'
+HOST = 'http://{address}:{port}/{uri}'
 
 
 class Payload:
