@@ -44,10 +44,7 @@ class MongoConnector:
 
     def batchWrite(self, data: list, collectionName: str):
         try:
-            print(self.db[collectionName].insert_many(data))
-        except errors.DuplicateKeyError:
-            self.errorLogger.logger.error(traceback.format_exc())
-        except errors.BulkWriteError:
-            self.errorLogger.logger.error(traceback.format_exc())
-        except:
-            self.errorLogger.logger.error(traceback.format_exc())
+            result = self.db[collectionName].insert_many(data, ordered=False)
+            print(len(result.inserted_ids))
+        except errors.BulkWriteError as e:
+            self.errorLogger.logger.error(e)
