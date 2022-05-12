@@ -1,8 +1,5 @@
 import traceback
-
 import requests
-
-HOST = 'http://{host}/{uri}'
 
 
 class Payload:
@@ -55,7 +52,8 @@ class Payload:
 def sendData(host: str, kind: str, data: dict, errorLogger):
     try:
         # requests.post 로 데이터 전송
-        result = requests.post(url=host, json=data)
+        url = '{host}/{kind}'.format(host=host, kind=kind)
+        result = requests.post(url=url, json=data)
         print(result)
         if result.status_code == 200:
             return True
