@@ -31,7 +31,8 @@ class XPath:
     firstFetched = '//*[@id="_pcmap_list_scroll_container"]/ul/li[1]/div[1]/a[1]'
 
     # place info
-    menuTabPath = '//*[@id="app-root"]/div/div/div/div[4]/div/div/div/div/a[{index}]'
+    menuTabPath = '//*[@id="app-root"]/div/div/div/div[5]/div/div/div/div/a[{index}]/span'
+    menuTab1Path = '//*[@id="app-root"]/div/div/div/div[4]/div/div/div/div/a[{index}]'
     menuTab2Path = '//*[@id="app-root"]/div/div/div/div[4]/div/div/div/div/div/div[2]/div/div/a[{index}]/span'
     menuTab3Path = '//*[@id="root"]/div[2]/div/header/div[2]/div/a[{index}]/span'
     menuMoreButton = '//*[@id="app-root"]/div/div/div/div[6]/div/div[1]/div[2]/a'
@@ -39,7 +40,7 @@ class XPath:
     placeMeanRating = '//*[@id="app-root"]/div/div/div/div[2]/div[1]/div[2]/span[1]/em'
     serviceHour = '//*[@id="app-root"]/div/div/div/div[5]/div/div[1]/div/ul/li[4]/div/a'
     summary = '//*[@id="app-root"]/div/div/div/div[5]/div/div[1]/div/ul/li[4]/div/a'
-    agePopluarity = '//*[@id="bar_chart_container"]/ul/li[{age}]/div[1]/span/span'
+    agePopluarity = '//*[@id="bar_chart_container"]/ul/li[{age}]/div[1]/span/span[1]'
     femalePopularity = '//*[@id="_datalab_chart_donut1_0"]/svg/g[1]/g[3]/g[4]/g[2]/text[2]/text()'
     malePopularity = '//*[@id="_datalab_chart_donut1_0"]/svg/g[1]/g[3]/g[4]/g[2]/text[1]'
     telephone = '//*[@id="app-root"]/div/div/div/div[5]/div/div[1]/div/ul/li[1]/div/span[1]'
@@ -50,7 +51,10 @@ class XPath:
 
     placeName = '//*[@id="_title"]/span[1]'
     placeType = '//*[@id="_title"]/span[2]'
-    timeMoreButton = '//*[@id="app-root"]/div/div/div/div[5]/div/div[{divNum}]/div/ul/li[{idx}]/div/a/div/div/span'
+
+    timeMoreButton = '//*[@id="app-root"]/div/div/div/div[6]/div/div[{divNum}]/div/ul/li[{idx}]/div/div/a/span[2]'
+
+    timeMoreButton1 = '//*[@id="app-root"]/div/div/div/div[5]/div/div[{divNum}]/div/ul/li[{idx}]/div/a/div/div/span'
     timeMoreButton2 = '//*[@id="app-root"]/div/div/div/div[6]/div/div[{divNum}]/div/ul/li[{idx}]/div/a/div[1]/div/span'
     timeMoreButton3= '//*[@id="app-root"]/div/div/div/div[6]/div/div[{divNum}]/div/ul/li[{idx}]/div/a/div[1]/div/div/div/span[2]'
     descriptionMoreButton = '//*[@id="app-root"]/div/div/div/div[5]/div/div[{divNum}]/div/ul/li[{idx}]/div/a/span[2]'
@@ -58,11 +62,10 @@ class XPath:
 
     description = '//*[@id="app-root"]/div/div/div/div[{divNum1}]/div/div[{divNum2}]/div/ul/li[{idx}]/div/a/span[1]'
     infoText = '//*[@id="app-root"]/div/div/div/div[5]/div/div[{divNum}]/div/ul/li[{idx}]/div/a/span[1]'
-    datalabMoreButton = '//*[@id="app-root"]/div/div/div/div[6]/div/div[{divNum}]/div[2]/a'
-
+    datalabMoreButton = '//*[@id="app-root"]/div/div/div/div[7]/div/div[{divNum}]/div[2]/a'
     reviewNum = '//*[@id="app-root"]/div/div/div/div[2]/div[1]/div[2]/span[{num}]/a/em'
     placeTab = '//*[@id="app-root"]/div/div/div/div[4]/div/div/div/div'
-    homePath = '//*[@id="app-root"]/div/div/div/div[4]/div/div/div/div/a[1]/span'
+    homePath = '//*[@id="app-root"]/div/div/div/div[5]/div/div/div/div/a[1]/span'
 
     # get review
     reviewTab = '//*[@id="app-root"]/div/div/div/div[4]/div/div/div/div/a[{index}]/span'
@@ -130,3 +133,6 @@ class ClassName:
     reviewInfo2 = '_1fvo3'
     recentClass1 = '_2OZXM'
     recentClass2 = '_3WQBd'
+
+    dataLabMoreButtonClass = '_3iTUo'
+

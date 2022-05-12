@@ -102,10 +102,10 @@ class Util:
             return False
 
     # click 하기
-    def click(self, driver: webdriver, timeout: int, kind: By, value: str) -> bool:
+    def click(self, driver: webdriver, timeout: int, kind: By, value: str, index: int = 0) -> bool:
         try:
             time.sleep(1)
-            fetched = self.getElements(driver, timeout, kind, value)[0]
+            fetched = self.getElements(driver, timeout, kind, value)[index]
             time.sleep(1)
             fetched.click()
             return True
@@ -203,9 +203,11 @@ class Util:
 
     # 영업 시간 더보기 버튼 클릭
     def clickTimeMoreButton(self, driver: webdriver, divNum: int, index: int):
-        if not self.click(driver, 5, By.XPATH, XPath.timeMoreButton.format(divNum=divNum, idx=index)):
-            if not self.click(driver, 5, By.XPATH, XPath.timeMoreButton2.format(divNum=divNum, idx=index)):
-                self.click(driver, 5, By.XPATH, XPath.timeMoreButton3.format(divNum=divNum, idx=index))
+        self.click(driver, 5, By.CLASS_NAME, ClassName.timeMoreButtonClass, 1)
+        # if not self.click(driver, 5, By.XPATH, XPath.timeMoreButton.format(divNum=divNum, idx=index)):
+        #     if not self.click(driver, 5, By.XPATH, XPath.timeMoreButton1.format(divNum=divNum, idx=index)):
+        #         if not self.click(driver, 5, By.XPATH, XPath.timeMoreButton2.format(divNum=divNum, idx=index)):
+        #             self.click(driver, 5, By.XPATH, XPath.timeMoreButton3.format(divNum=divNum, idx=index))
 
     # 메뉴 정보 받아오기
     def getMenuInfo(self, driver):
@@ -232,10 +234,11 @@ class Util:
 
         for i, j in enumerate(tabElements):
             if j.text == name:
-                if not self.click(driver, 2, By.XPATH, XPath.reviewTab.format(index=i + 1)):
-                    if not self.click(driver, 2, By.XPATH, XPath.menuTab2Path.format(index=i + 1)):
-                        if not self.click(driver, 2, By.XPATH, XPath.menuTab3Path.format(index=i + 1)):
-                            return False
+                if not self.click(driver, 2, By.XPATH, XPath.menuTabPath.format(index=i + 1)):
+                    if not self.click(driver, 2, By.XPATH, XPath.menuTab1Path.format(index=i + 1)):
+                        if not self.click(driver, 2, By.XPATH, XPath.menuTab2Path.format(index=i + 1)):
+                            if not self.click(driver, 2, By.XPATH, XPath.menuTab3Path.format(index=i + 1)):
+                                return False
                 return True
         return False
 
@@ -432,7 +435,7 @@ class Util:
 
         divNum = self.countDivNum(self.driver)
 
-        informationList = self.getElements(self.driver, 5, By.CSS_SELECTOR, Selector.informationSelector.format(num=5))
+        informationList = self.getElements(self.driver, 5, By.CSS_SELECTOR, Selector.informationSelector.format(num=6))
         for index, information in enumerate(informationList, start=1):
             infoText = information.text.split('\n')
             if infoText[0] == '영업시간':
@@ -473,14 +476,19 @@ class Util:
             if '메뉴' in tabList: divNum += 2
             else: divNum += 1
 
+        dataLabButtons = self.getElements(self.driver, 5, By.CLASS_NAME, ClassName.dataLabMoreButtonClass)
+        for idx, button in enumerate(dataLabButtons):
+            if button.text == '더보기':
+                self.click(self.driver, 5, By.CLASS_NAME, ClassName.dataLabMoreButtonClass, idx)
+
         self.click(self.driver, 5, By.XPATH, XPath.datalabMoreButton.format(divNum=divNum))
         if self.getElements(self.driver, 5, By.CLASS_NAME, ClassName.popularityClass):
             for idx in range(10, 70, 10):
                 popularityValue = self.getValue(self.driver, 5, By.XPATH, XPath.agePopluarity.format(age=idx // 10))
                 if popularityValue:
-                    popularityValue = popularityValue.replace('%', '')
+                    popularityValue = popularityValue.split('.')[0]
                 if popularityValue.isdigit():
-                    data['agePopularity'][f'{idx}대'] = float(popularityValue)
+                    data['agePopularity'][f'{idx}대'] = int(popularityValue)
             genderData = self.getElements(self.driver, 5, By.CLASS_NAME, ClassName.donutGraphClass)
             if genderData:
                 genderData = genderData[0]
@@ -516,6 +524,7 @@ class Util:
                     except:
                         pass
         result = sendData("PlaceInfoModel", data, self.errorLogger)
+        print("place : ", data)
         if not result:
             self.errorLogger.logger.error(name)
         self.getReviewInfo(self.driver, data['placeName'], data['placeAddress'], len(data['like']))
