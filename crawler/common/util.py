@@ -21,9 +21,10 @@ from .network import *
 
 class Util:
     def __init__(self):
-        self.indexLogger = Logger('C:\\Users\\catty\\PycharmProjects\\luckyseven\\crawler\\log\\SavedIndex.log', "1")
-        self.noPlaceLogger = Logger('C:\\Users\\catty\\PycharmProjects\\luckyseven\\crawler\\log\\Noplace.log', "2")
-        self.driver = self.loadDriver('C:\\Users\\catty\\PycharmProjects\\Crawler\\chromedriver_win32\\chromedriver.exe')
+        self.indexLogger = Logger('C:\\Users\\nyong\\PycharmProjects\\luckyseven\\crawler\\log\\SavedIndex.log', "1")
+        self.errorLogger = Logger('C:\\Users\\nyong\\PycharmProjects\\luckyseven\\crawler\\log\\Error.log', "2")
+
+        self.driver = self.loadDriver('C:\\Users\\nyong\\PycharmProjects\\luckyseven\\crawler\\chromedriver_win32\\chromedriver.exe')
 
     # Driver load & get place list
     def loadDriver(self, driver_path: str):
@@ -363,8 +364,13 @@ class Util:
                     print("user: ", userData)
                     print("review: ", reviewData)
                     # print(reviewData) # 디버깅을 위한 출력
-                    sendData("ReviewInfoModel", reviewData)
-                    sendData("UserInfoModel", userData)
+                    result = sendData("ReviewInfoModel", reviewData, self.errorLogger)
+                    if not result:
+                        self.errorLogger.logger.error(placeName)
+                    result = sendData("UserInfoModel", userData, self.errorLogger)
+                    if not result:
+                        self.errorLogger.logger.error(placeName)
+
             prevNum = len(reviewElements)
             if finish or not self.click(driver, 2, By.CLASS_NAME, ClassName.reviewMoreButtonClass):
                 break
@@ -509,8 +515,9 @@ class Util:
                         data['like'][likeTopic[idx].text.split("\"")[1]] = int(likeNum[idx].text.split('\n')[-1])
                     except:
                         pass
-        sendData("PlaceInfoModel", data)
-        print(data)
+        result = sendData("PlaceInfoModel", data, self.errorLogger)
+        if not result:
+            self.errorLogger.logger.error(name)
         self.getReviewInfo(self.driver, data['placeName'], data['placeAddress'], len(data['like']))
 
         self.driver.switch_to.parent_frame()

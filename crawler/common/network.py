@@ -1,6 +1,8 @@
+import traceback
+
 import requests
 
-HOST = 'http://127.0.0.1:8000/{uri}'
+HOST = 'http://61.254.240.172:30000/{uri}'
 
 
 class Payload:
@@ -50,18 +52,15 @@ class Payload:
         }
 
 
-class ResendData:
-    def __init__(self):
-        self.PlaceInfoModel = []
-        self.ReviewInfoModel = []
-        self.UserInfoModel = []
-
-resend = ResendData()
-
-def sendData(kind: str, data: dict):
-    global resend
-    # requests.post 로 데이터 전송
-    result = requests.post(url=HOST.format(uri=kind), json=data)
-    if result.status_code != 200:
-        exec(f'resend.{kind}.append({data})')
-    print(result)
+def sendData(kind: str, data: dict, errorLogger):
+    try:
+        # requests.post 로 데이터 전송
+        result = requests.post(url=HOST.format(uri=kind), json=data)
+        print(result)
+        if result.status_code == 200:
+            return True
+        else:
+            return False
+    except:
+        print(traceback.format_exc())
+        errorLogger.logger.error(data)

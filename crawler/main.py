@@ -14,7 +14,7 @@ def getPlaceName(util: Util):
 
 
 # 장소 & 리뷰 정보
-def getPlaceInfo(util:Util, startidx=15000, finalidx=16000):
+def getPlaceInfo(util:Util, startidx=4000, finalidx=4001):
     geoLocal = Nominatim(user_agent='South Korea')
     placeList = loadList('./data/name_list_final.pkl')
 
@@ -22,14 +22,14 @@ def getPlaceInfo(util:Util, startidx=15000, finalidx=16000):
         placeName = name + " " + address
         result = util.getPlaceInfoDetails(geoLocal, placeName)
         if not result:
-            util.noPlaceLogger.logger.error(f"{idx} {placeName}")
+            util.errorLogger.logger.error(f"{idx} {placeName}")
         util.indexLogger.logger.error(f"{idx} {placeName}")
 
 
-    # constructPickle('./data/no_place', noPlace)
-    util.constructPickle('./data/resend_place', resend.PlaceInfoModel)
-    util.constructPickle('./data/resend_review', resend.ReviewInfoModel)
-    util.constructPickle('./data/resend_user', resend.UserInfoModel)
+    # # constructPickle('./data/no_place', noPlace)
+    # util.constructPickle('./data/resend_place', resend.PlaceInfoModel)
+    # util.constructPickle('./data/resend_review', resend.ReviewInfoModel)
+    # util.constructPickle('./data/resend_user', resend.UserInfoModel)
 
 
 if __name__ == '__main__':
