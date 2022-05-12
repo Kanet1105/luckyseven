@@ -8,8 +8,7 @@ from consumer import BatchPullConsumer
 from logger import Logger
 
 BATCHSIZE = 10
-ERRORLOGER = Logger('D:\\PythonProjects\\L7D\\logs\\errors.log')
-DATALOGGER = Logger('D:\\PythonProjects\\L7D\\logs\\data.log')
+ERRORLOGER = Logger('D:\\PythonProjects\\L7D\\logs\\errors.txt')
 HOST = '192.168.1.101:30042'
 PODNAME = 'psub-{index}'  # <-- Statefulset field $metadata.name
 STREAM = 'data'
@@ -25,7 +24,7 @@ async def main():
     subscribers = []
     count = 1
     for topic in SUBJECTS:
-        client = BatchPullConsumer(BATCHSIZE, ERRORLOGER, DATALOGGER)
+        client = BatchPullConsumer(BATCHSIZE, ERRORLOGER)
         await client.connect(HOST, PODNAME.format(index=count), STREAM, [topic])
         subscribers.append(client)
         count += 1
