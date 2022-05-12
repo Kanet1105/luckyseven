@@ -20,11 +20,10 @@ from .network import *
 
 
 class Util:
-    def __init__(self):
-        self.indexLogger = Logger('C:\\Users\\nyong\\PycharmProjects\\luckyseven\\crawler\\log\\SavedIndex.log', "1")
-        self.errorLogger = Logger('C:\\Users\\nyong\\PycharmProjects\\luckyseven\\crawler\\log\\Error.log', "2")
-
-        self.driver = self.loadDriver('C:\\Users\\nyong\\PycharmProjects\\luckyseven\\crawler\\chromedriver_win32\\chromedriver.exe')
+    def __init__(self, indexLogPath, errorLogPath, webdriverPath):
+        self.indexLogger = Logger(indexLogPath, "1")
+        self.errorLogger = Logger(errorLogPath, "2")
+        self.driver = self.loadDriver(webdriverPath)
 
     # Driver load & get place list
     def loadDriver(self, driver_path: str):
