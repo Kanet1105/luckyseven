@@ -502,8 +502,9 @@ class Util:
 
         if self.clickTab(self.driver, '메뉴'):
             menuList, menuPrice = self.getMenuInfo(self.driver)
+            print(len(menuList), len(menuPrice))
             if menuList :
-                for menu_idx in range(len(menuList) - 1):
+                for menu_idx in range(min(len(menuPrice), len(menuList))):
                     data['menu'][menuList[menu_idx].text] = menuPrice[menu_idx].text
             # else:
             #     menuErrorLogger.error(name)
@@ -524,6 +525,7 @@ class Util:
                         data['like'][likeTopic[idx].text.split("\"")[1]] = int(likeNum[idx].text.split('\n')[-1])
                     except:
                         pass
+        return
         result = sendData(self.host, "PlaceInfoModel", data, self.errorLogger)
         print("place : ", data)
         if not result:
