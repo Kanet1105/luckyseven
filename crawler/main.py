@@ -20,7 +20,7 @@ def getPlaceInfo(util:Util, startidx=4000, finalidx=4001):
 
     for idx, (name, address) in enumerate(placeList[startidx:finalidx], start=startidx):
         placeName = name + " " + address
-        placeName = '카페힐 서울 서초구 서초중앙로 149-5'
+        placeName = '루프탑2018'
         result = util.getPlaceInfoDetails(geoLocal, placeName)
         if not result:
             util.errorLogger.logger.error(f"{idx} {placeName}")

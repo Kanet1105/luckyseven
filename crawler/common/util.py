@@ -450,8 +450,9 @@ class Util:
                     data['time'][dayList[idx].text] = timeList[1:][idx].text
 
             elif infoText[0] == '설명':
-                if not self.click(self.driver, 5, By.XPATH, XPath.descriptionMoreButton.format(divNum=divNum, idx=index)):
-                    self.click(self.driver, 5, By.XPATH, XPath.descriptionMoreButton2.format(divNum=divNum, idx=index))
+                self.click(self.driver, 5, By.CLASS_NAME, ClassName.descriptionMoreButtonClass)
+                # if not self.click(self.driver, 5, By.XPATH, XPath.descriptionMoreButton.format(divNum=divNum, idx=index)):
+                #     self.click(self.driver, 5, By.XPATH, XPath.descriptionMoreButton2.format(divNum=divNum, idx=index))
                 description = self.getElements(self.driver, 5, By.XPATH,
                                           XPath.description.format(divNum1=5, divNum2=divNum, idx=index))
                 if not description:
