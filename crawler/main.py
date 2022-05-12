@@ -34,10 +34,11 @@ def getPlaceInfo(util:Util, startidx: int, finalidx: int):
 
 
 if __name__ == '__main__':
+    host = ''
     indexLogPath = ''
     errorLogPath = ''
     webdriverPath = ''
     startIndex = 0
     endIndex = 22000
-    util = Util(indexLogPath, errorLogPath, webdriverPath)
+    util = Util(host, indexLogPath, errorLogPath, webdriverPath)
     getPlaceInfo(util, startIndex, endIndex)

@@ -20,7 +20,8 @@ from .network import *
 
 
 class Util:
-    def __init__(self, indexLogPath, errorLogPath, webdriverPath):
+    def __init__(self, host, indexLogPath, errorLogPath, webdriverPath):
+        self.host = host
         self.indexLogger = Logger(indexLogPath, "1")
         self.errorLogger = Logger(errorLogPath, "2")
         self.driver = self.loadDriver(webdriverPath)
@@ -366,10 +367,10 @@ class Util:
                     print("user: ", userData)
                     print("review: ", reviewData)
                     # print(reviewData) # 디버깅을 위한 출력
-                    result = sendData("ReviewInfoModel", reviewData, self.errorLogger)
+                    result = sendData(self.host, "ReviewInfoModel", reviewData, self.errorLogger)
                     if not result:
                         self.errorLogger.logger.error(placeName)
-                    result = sendData("UserInfoModel", userData, self.errorLogger)
+                    result = sendData(self.host, "UserInfoModel", userData, self.errorLogger)
                     if not result:
                         self.errorLogger.logger.error(placeName)
 
@@ -523,7 +524,7 @@ class Util:
                         data['like'][likeTopic[idx].text.split("\"")[1]] = int(likeNum[idx].text.split('\n')[-1])
                     except:
                         pass
-        result = sendData("PlaceInfoModel", data, self.errorLogger)
+        result = sendData(self.host, "PlaceInfoModel", data, self.errorLogger)
         print("place : ", data)
         if not result:
             self.errorLogger.logger.error(name)
