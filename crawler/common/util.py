@@ -329,7 +329,7 @@ class Util:
                 for i in range(prevNum, len(reviewElements)):
                     pl = Payload()
                     reviewData = pl.reviewInfo
-                    userData = pl.userInfo
+                    # userData = pl.userInfo
                     self.click(reviewElements[i], 5, By.CLASS_NAME, ClassName.reviewMoreContentButtonClass)
 
                     # 리뷰 유저의 ID -> str
@@ -354,8 +354,8 @@ class Util:
                         continue
 
                     # 중복 상관없이 유저 정보 저장
-                    userData['userID'] = reviewUserId
-                    userData.update(reviewUserHash)
+                    # userData['userID'] = reviewUserId
+                    # userData.update(reviewUserHash)
 
                     reviewData['userHash'] = reviewUserHash['userHash']
                     reviewData['reviewUserID'] = reviewUserId
@@ -364,15 +364,15 @@ class Util:
                     reviewData['reviewContent'] = self.makeTokenizing(reviewContent)
                     reviewData.update(reviewInfo)
 
-                    print("user: ", userData)
+                    # print("user: ", userData)
                     print("review: ", reviewData)
                     # print(reviewData) # 디버깅을 위한 출력
                     result = sendData(self.host, "ReviewInfoModel", reviewData, self.errorLogger)
                     if not result:
                         self.errorLogger.logger.error(placeName)
-                    result = sendData(self.host, "UserInfoModel", userData, self.errorLogger)
-                    if not result:
-                        self.errorLogger.logger.error(placeName)
+                    # result = sendData(self.host, "UserInfoModel", userData, self.errorLogger)
+                    # if not result:
+                    #     self.errorLogger.logger.error(placeName)
 
             prevNum = len(reviewElements)
             if finish or not self.click(driver, 2, By.CLASS_NAME, ClassName.reviewMoreButtonClass):
