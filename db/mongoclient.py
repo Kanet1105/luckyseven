@@ -46,6 +46,6 @@ class MongoConnector:
     def batchWrite(self, data: list, collectionName: str):
         try:
             result = self.db[collectionName].insert_many(data, ordered=False)
-            print('{now} {result}'.format(now=datetime.now().strftime('[%H:%M:%S]'), result=len(result.inserted_ids)))
+            print('{now} : {result}'.format(now=datetime.now().strftime('[%H:%M:%S]'), result=len(result.inserted_ids)))
         except errors.BulkWriteError as e:
             self.errorLogger.logger.error(e)
